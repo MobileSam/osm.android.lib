@@ -25,7 +25,8 @@ public interface OSMapTileProviderConstants {
 	public static final int MAXIMUM_ZOOMLEVEL = 22;
 
 	/** Base path for osmdroid files. Zip files are in this folder. */
-	public static final File OSMDROID_PATH = new File(Environment.getExternalStorageDirectory(),"/Android/data/");
+	public static final File OSMDROID_PATH = new File(Environment.getExternalStorageDirectory(),"/Android/data/eu/trentorise/smartcampus/osm/android");
+	
 
 	/** Base path for tiles. */
 	public static final File TILE_PATH_BASE = new File(OSMDROID_PATH, "tiles");
