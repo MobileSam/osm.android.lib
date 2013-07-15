@@ -104,7 +104,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 	private final ScaleAnimation mZoomInAnimation;
 	private final ScaleAnimation mZoomOutAnimation;
 
-	protected Integer mMinimumZoomLevel;
+	protected Integer mMinimumZoomLevel = 2;
 	protected Integer mMaximumZoomLevel;
 
 	private final MapController mController;
