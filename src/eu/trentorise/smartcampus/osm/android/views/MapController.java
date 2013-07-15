@@ -1,10 +1,10 @@
 package eu.trentorise.smartcampus.osm.android.views;
-import microsoft.mappoint.TileSystem;
 
 import eu.trentorise.smartcampus.osm.android.api.IGeoPoint;
 import eu.trentorise.smartcampus.osm.android.api.IMapController;
 import eu.trentorise.smartcampus.osm.android.util.BoundingBoxE6;
 import eu.trentorise.smartcampus.osm.android.util.GeoPoint;
+import eu.trentorise.smartcampus.osm.android.util.TileSystem;
 import eu.trentorise.smartcampus.osm.android.views.util.MyMath;
 import eu.trentorise.smartcampus.osm.android.views.util.constants.MapViewConstants;
 import eu.trentorise.smartcampus.osm.android.views.util.constants.MathConstants;

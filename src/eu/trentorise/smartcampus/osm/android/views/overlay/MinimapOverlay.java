@@ -1,10 +1,10 @@
 package eu.trentorise.smartcampus.osm.android.views.overlay;
 
-import microsoft.mappoint.TileSystem;
 
 import eu.trentorise.smartcampus.osm.android.tileprovider.MapTileProviderBase;
 import eu.trentorise.smartcampus.osm.android.tileprovider.MapTileProviderBasic;
 import eu.trentorise.smartcampus.osm.android.tileprovider.tilesource.ITileSource;
+import eu.trentorise.smartcampus.osm.android.util.TileSystem;
 import eu.trentorise.smartcampus.osm.android.views.MapView;
 import eu.trentorise.smartcampus.osm.android.views.MapView.Projection;
 import eu.trentorise.smartcampus.osm.android.views.safecanvas.ISafeCanvas;

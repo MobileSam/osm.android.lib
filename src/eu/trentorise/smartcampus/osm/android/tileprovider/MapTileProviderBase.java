@@ -1,12 +1,13 @@
 package eu.trentorise.smartcampus.osm.android.tileprovider;
 import java.util.HashMap;
 
-import microsoft.mappoint.TileSystem;
 
 import eu.trentorise.smartcampus.osm.android.tileprovider.constants.OSMapTileProviderConstants;
 import eu.trentorise.smartcampus.osm.android.tileprovider.modules.MapTileModuleProviderBase;
 import eu.trentorise.smartcampus.osm.android.tileprovider.tilesource.ITileSource;
 import eu.trentorise.smartcampus.osm.android.util.TileLooper;
+import eu.trentorise.smartcampus.osm.android.util.TileSystem;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

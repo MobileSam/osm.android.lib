@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import microsoft.mappoint.TileSystem;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +54,7 @@ import eu.trentorise.smartcampus.osm.android.util.BoundingBoxE6;
 import eu.trentorise.smartcampus.osm.android.util.GeoPoint;
 import eu.trentorise.smartcampus.osm.android.util.GeometryMath;
 import eu.trentorise.smartcampus.osm.android.util.RoutingTask;
+import eu.trentorise.smartcampus.osm.android.util.TileSystem;
 import eu.trentorise.smartcampus.osm.android.util.constants.GeoConstants;
 import eu.trentorise.smartcampus.osm.android.views.overlay.ItemizedIconOverlay;
 import eu.trentorise.smartcampus.osm.android.views.overlay.ItemizedIconOverlay.OnItemGestureListener;

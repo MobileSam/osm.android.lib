@@ -3,7 +3,6 @@ package eu.trentorise.smartcampus.osm.android.views.overlay.mylocation;
 
 import java.util.LinkedList;
 
-import microsoft.mappoint.TileSystem;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +23,7 @@ import eu.trentorise.smartcampus.osm.android.DefaultResourceProxyImpl;
 import eu.trentorise.smartcampus.osm.android.ResourceProxy;
 import eu.trentorise.smartcampus.osm.android.api.IMapView;
 import eu.trentorise.smartcampus.osm.android.util.GeoPoint;
+import eu.trentorise.smartcampus.osm.android.util.TileSystem;
 import eu.trentorise.smartcampus.osm.android.views.MapController;
 import eu.trentorise.smartcampus.osm.android.views.MapView;
 import eu.trentorise.smartcampus.osm.android.views.MapView.Projection;

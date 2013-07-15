@@ -2,7 +2,6 @@ package eu.trentorise.smartcampus.osm.android.util;
 
 import eu.trentorise.smartcampus.osm.android.util.MyMath;
 
-import microsoft.mappoint.TileSystem;
 
 import eu.trentorise.smartcampus.osm.android.tileprovider.MapTile;
 

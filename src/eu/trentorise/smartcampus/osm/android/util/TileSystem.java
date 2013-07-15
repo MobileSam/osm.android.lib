@@ -1,4 +1,4 @@
-package microsoft.mappoint;
+package eu.trentorise.smartcampus.osm.android.util;
 
 /*
  * http://msdn.microsoft.com/en-us/library/bb259689.aspx
@@ -8,7 +8,6 @@ package microsoft.mappoint;
  *
  */
 
-import eu.trentorise.smartcampus.osm.android.util.GeoPoint;
 
 import android.graphics.Point;
 

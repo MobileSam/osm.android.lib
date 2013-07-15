@@ -3,13 +3,13 @@ package eu.trentorise.smartcampus.osm.android.views.util;
 
 import java.util.List;
 
-import microsoft.mappoint.TileSystem;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import eu.trentorise.smartcampus.osm.android.util.BoundingBoxE6;
 import eu.trentorise.smartcampus.osm.android.util.GeoPoint;
+import eu.trentorise.smartcampus.osm.android.util.TileSystem;
 import eu.trentorise.smartcampus.osm.android.views.MapView.Projection;
 
 public class PathProjection {
