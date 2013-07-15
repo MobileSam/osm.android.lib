@@ -85,7 +85,7 @@ public class ExtendedOverlayItem extends OverlayItem {
 	public Point getHotspot(HotspotPlace place, int w, int h){
 		Point hp = new Point();
 		if (place == null)
-			place = HotspotPlace.BOTTOM_CENTER; //use same default than in osmdroid. 
+			place = HotspotPlace.TOP_CENTER; //use same default than in osmdroid. 
 		switch (place){
 		case NONE : 
 			hp.set(0, 0);
@@ -137,7 +137,8 @@ public class ExtendedOverlayItem extends OverlayItem {
 		} //else... we don't have the default marker size => don't user default markers!!!
 		Point markerH = getHotspot(getMarkerHotspot(), markerWidth, markerHeight);
 		Point bubbleH = getHotspot(HotspotPlace.TOP_CENTER, markerWidth, markerHeight);
-		bubbleH.offset(-markerH.x, -markerH.y);
+		bubbleH.offset(0,0/*-markerH.x, -markerH.y*/);
+	
 		
 		bubble.open(this, bubbleH.x, bubbleH.y);
 		if (panIntoView)

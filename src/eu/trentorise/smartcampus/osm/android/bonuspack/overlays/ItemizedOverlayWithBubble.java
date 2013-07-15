@@ -147,7 +147,7 @@ public class ItemizedOverlayWithBubble<Item extends OverlayItem> extends Itemize
 		hideBubble();
 	}
 
-	@Override public synchronized void draw(final Canvas canvas, final MapView mapView, final boolean shadow) {
+	 public synchronized void draw(final ISafeCanvas canvas, final MapView mapView, final boolean shadow) {
 		//1. Fixing drawing focused item on top in ItemizedOverlay (osmdroid issue 354):
 		//2. Fixing lack of synchronization on mItemList
 		if (shadow) {
