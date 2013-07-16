@@ -181,6 +181,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 
 		mGestureDetector = new GestureDetector(context, new MapViewGestureDetectorListener());
 		mGestureDetector.setOnDoubleTapListener(new MapViewDoubleClickListener());
+		this.setTileSource(TileSourceFactory.MAPNIK);
 	}
 
 	/**
