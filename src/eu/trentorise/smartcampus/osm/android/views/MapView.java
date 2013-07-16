@@ -311,7 +311,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
  */
 	public void drawPath(ArrayList<GeoPoint> points)
 	{
-		RoutingTask route = new RoutingTask(getContext(), this);
+		RoutingTask route = new RoutingTask(getContext(), this, true);
 		route.execute(points);
 	}
 	

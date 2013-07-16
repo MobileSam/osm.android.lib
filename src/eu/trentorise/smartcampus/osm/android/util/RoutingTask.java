@@ -15,9 +15,8 @@ import eu.trentorise.smartcampus.osm.android.views.overlay.PathOverlay;
  * See http://open.mapquestapi.com/guidance <BR>
  * This class contains an AsyncTask that permits to get the route
  * You have to allocate a new AsyncTask like this: <BR>
- * RoutingTask myTask = new RoutingTask(Context, MapView);<BR>
+ * RoutingTask myTask = new RoutingTask(Context, MapView, draw);<BR>
  * myTask.execute(ArrayList<GeoPoint>);<BR>
- * This task draw the route itself
  * @return a PathOverlay
  * @author Dylan Stenico
  */
@@ -34,7 +33,7 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 	 * @param mapView
 	 * a MapView object
 	 * @param draw
-	 * set as true only to draw the path on the mapView
+	 * set as true only to draw the path on the mapView. If you only want to get the PathOverley set as false and do task.get();
 	 */
 	public RoutingTask(Context mContext, MapView mapView, boolean draw) {
 		super();
