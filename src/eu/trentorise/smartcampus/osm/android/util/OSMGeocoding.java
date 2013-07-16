@@ -14,15 +14,19 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 /**
- * This class contains two class doing Geocoding and Reverse Geocoding with the osmdroid.bonuspack.location.GeocoderNominatim class. 
+ * A class for handling Geocoding and Reverse Geocoding with the osm.android.bonuspack.location.GeocoderNominatim;. Geocoding is the process of transforming a street address or other description of a 
+ * location into a (latitude, longitude) coordinate. Reverse geocoding is the process of transforming a (latitude, longitude) coordinate into 
+ * a (partial) address. The amount of detail in a reverse geocoded location description may vary, for example one might contain the full street 
+ * address of the closest building, while another might contain only a city name and postal code.
+ * @author Dylan Stenico
  */
 public class OSMGeocoding {
 	/**
-	 * this class contains an AsyncTask that permits to convert a GeoPoint into an Address
-	 * You have to instace a new AsyncTask like this:
-	 * OSMGeocoding.FromPointToAddress myTask = new OSMGeocoding.FromPointToAddress(context);
-	 * myTask.execute(double arg[0], double arg[1]);
-	 * Address result = myTask.get();
+	 * This class contains an AsyncTask that permits to convert a GeoPoint into an Address
+	 * You have to instace a new AsyncTask like this: <BR>
+	 * OSMGeocoding.FromPointToAddress myTask = new OSMGeocoding.FromPointToAddress(context);<BR>
+	 * myTask.execute(double arg[0], double arg[1]);<BR>
+	 * Address result = myTask.get();<BR>
 	 * @return Address if it works, else null
 	 */
 	public static class FromPointToAddress extends AsyncTask<Double,Integer,Address> {
@@ -100,11 +104,11 @@ public class OSMGeocoding {
 	}
 
 	/**
-	 * this class contains an AsyncTask that permits to convert an Address into a GeoPoint
-	 * You have to instace a new AsyncTask like this:
-	 * OSMGeocoding.FromAddressToPoint myTask = new OSMGeocoding.FromAddressToPoint(context);
-	 * myTask.execute(String address);
-	 * GeoPoint result = myTask.get();
+	 * This class contains an AsyncTask that permits to convert an Address into a GeoPoint
+	 * You have to instace a new AsyncTask like this:<BR>
+	 * OSMGeocoding.FromAddressToPoint myTask = new OSMGeocoding.FromAddressToPoint(context);<BR>
+	 * myTask.execute(String address);<BR>
+	 * GeoPoint result = myTask.get();<BR>
 	 * @return GeoPoint if it works, else null
 	 */
 
