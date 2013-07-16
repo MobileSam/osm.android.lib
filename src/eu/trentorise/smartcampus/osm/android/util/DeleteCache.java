@@ -6,7 +6,6 @@ import eu.trentorise.smartcampus.osm.android.tileprovider.constants.OSMapTilePro
  * A class for handling the deletion of the osmdroid cache which would be saved in "/Android/data/eu/trentorise/smartcampus/osm/android"
  * NO need to be instanciated
  * @author Michele Armellini
- *
  */
 public class DeleteCache implements OSMapTileProviderConstants{
 

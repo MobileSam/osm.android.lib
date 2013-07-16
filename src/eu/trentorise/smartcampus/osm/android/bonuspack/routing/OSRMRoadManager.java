@@ -113,7 +113,7 @@ public class OSRMRoadManager extends RoadManager {
 		directions.put("11-7","Fai la rotonda e prendi la settima uscita< sur %s>");
 		directions.put("11-8","Fai la rotonda e prendi la ottava uscita< sur %s>");
 		directions.put("11-9","Fai la rotonda e prendi la nona uscita< sur %s>");
-		directions.put("15","hai raggiunto la tua destinazione");
+		directions.put("15","Hai raggiunto la tua destinazione");
 		
 		directions = new HashMap<String, String>();
 		DIRECTIONS.put("pl", directions);
