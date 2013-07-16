@@ -223,6 +223,10 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		return this.mController;
 	}
 
+	/**
+	 * This method create an Overlay which adds automatically a marker at the coordinates of the touch.
+	 * The marker has a default title and the coordinates as description.
+	 */
 	public void addMarkerOnLongClick() {
 		markersAdded = new ItemizedOverlayWithBubble<ExtendedOverlayItem>(getContext(), new ArrayList<ExtendedOverlayItem>(), this);
 		this.getOverlays().add(markersAdded);
