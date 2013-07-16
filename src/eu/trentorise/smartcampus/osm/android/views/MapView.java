@@ -37,6 +37,8 @@ import eu.trentorise.smartcampus.osm.android.ResourceProxy;
 import eu.trentorise.smartcampus.osm.android.api.IGeoPoint;
 import eu.trentorise.smartcampus.osm.android.api.IMapView;
 import eu.trentorise.smartcampus.osm.android.api.IProjection;
+import eu.trentorise.smartcampus.osm.android.bonuspack.overlays.ExtendedOverlayItem;
+import eu.trentorise.smartcampus.osm.android.bonuspack.overlays.ItemizedOverlayWithBubble;
 import eu.trentorise.smartcampus.osm.android.events.MapListener;
 import eu.trentorise.smartcampus.osm.android.events.ScrollEvent;
 import eu.trentorise.smartcampus.osm.android.events.ZoomEvent;
@@ -59,6 +61,7 @@ import eu.trentorise.smartcampus.osm.android.util.constants.GeoConstants;
 import eu.trentorise.smartcampus.osm.android.views.overlay.ItemizedIconOverlay;
 import eu.trentorise.smartcampus.osm.android.views.overlay.ItemizedIconOverlay.OnItemGestureListener;
 import eu.trentorise.smartcampus.osm.android.views.overlay.ItemizedOverlayWithFocus;
+import eu.trentorise.smartcampus.osm.android.views.overlay.LongPressOverlay;
 import eu.trentorise.smartcampus.osm.android.views.overlay.Overlay;
 import eu.trentorise.smartcampus.osm.android.views.overlay.OverlayItem;
 import eu.trentorise.smartcampus.osm.android.views.overlay.OverlayManager;
@@ -137,6 +140,8 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 	/* a point that will be reused to design added views */
 	private final Point mPoint = new Point();
 	private BoundingBoxE6 boundingBox= null;
+
+	protected ItemizedOverlayWithBubble<ExtendedOverlayItem> markersAdded;
 
 	// ===========================================================
 	// Constructors
@@ -218,6 +223,18 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		return this.mController;
 	}
 
+	public void addMarkerOnLongClick() {
+		markersAdded = new ItemizedOverlayWithBubble<ExtendedOverlayItem>(getContext(), new ArrayList<ExtendedOverlayItem>(), this);
+		this.getOverlays().add(markersAdded);
+		this.getOverlays().add(new LongPressOverlay(getContext()){
+			@Override
+			public void onLongPressGesture(MotionEvent event) {
+				IGeoPoint point = mapView.getProjection().fromPixels(event.getX(),event.getY());
+				mapView.markersAdded.addItem(new ExtendedOverlayItem("Item",point.getLatitudeE6()/1E6 + ","+ point.getLongitudeE6()/1E6,new GeoPoint(point.getLatitudeE6()/1E6,point.getLongitudeE6()/1E6), mContext));
+				mapView.invalidate();
+			}
+		});
+	}
 	
 	/**
 	 * Adds a new Overlay to the mapView containing the markers with a default GestureListener attached 

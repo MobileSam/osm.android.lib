@@ -1,8 +1,8 @@
 package eu.trentorise.smartcampus.osm.android.views.overlay;
 
 
-import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.Overlay;
+import eu.trentorise.smartcampus.osm.android.views.MapView;
+import eu.trentorise.smartcampus.osm.android.views.overlay.Overlay;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 /**
- * A class to handling the long press gesture on the map(over 1000ms). You only have to Override the OnLongPress(MotionEvent event) method. 
+ * A class for handling the long press gesture on the map(over 1000ms). You have to Override the OnLongPress(MotionEvent event) method. 
  * @author Dylan Stenico
  *
  */
@@ -20,16 +20,20 @@ public class LongPressOverlay extends Overlay
 	float x, y;
 	final float deltaX = 0;
 	final float deltaY = 0;
-	Context mContext;
+	public Context mContext;
+	public MapView mapView;
+	
 	public LongPressOverlay(Context ctx) {
 		super(ctx);
 		// TODO Auto-generated constructor stubs
 		mContext = ctx;
 	}
 
+
 	@Override
 	public boolean onTouchEvent(MotionEvent event, MapView mapView) 
 	{   
+		this.mapView = mapView;
 		//---when user lifts his finger---
 		Log.d("motionEvent", Integer.toString(event.getPointerCount()));
 		if (event.getAction() == event.ACTION_DOWN && event.getPointerCount() == 1){
@@ -49,6 +53,7 @@ public class LongPressOverlay extends Overlay
 		}
 		return false;
 	}
+	
 /**
  * What to do when you make a long press on the map.
  * @param mapView
