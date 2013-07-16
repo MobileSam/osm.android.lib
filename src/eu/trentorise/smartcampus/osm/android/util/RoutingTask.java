@@ -4,9 +4,12 @@ import java.util.ArrayList;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.util.Log;
-
+import eu.trentorise.smartcampus.osm.android.ResourceProxy;
+import eu.trentorise.smartcampus.osm.android.ResourceProxy.bitmap;
 import eu.trentorise.smartcampus.osm.android.bonuspack.overlays.ExtendedOverlayItem;
 import eu.trentorise.smartcampus.osm.android.bonuspack.overlays.ItemizedOverlayWithBubble;
 import eu.trentorise.smartcampus.osm.android.bonuspack.routing.MapQuestRoadManager;
@@ -28,14 +31,16 @@ import eu.trentorise.smartcampus.osm.android.views.overlay.PathOverlay;
  */
 public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverlay> {
 
+
+	ResourceProxy mProxy;
 	Context mContext;
 	ProgressDialog dialog;
 	Road road;
 	MapView mapView;
-    boolean stop = false;
-    
-    boolean draw;
-    ArrayList<GeoPoint> myList;
+	boolean stop = false;
+
+	boolean draw;
+	ArrayList<GeoPoint> myList;
 	/**
 	 * @param mapViewO
 	 * a MapView object
@@ -48,6 +53,7 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 		dialog = new ProgressDialog(mContext);
 		this.mapView = mapView;
 		this.draw = Drawmarker;
+		mProxy = mapView.getResourceProxy();
 	}
 
 	@Override
@@ -59,9 +65,9 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 
 	@Override
 	protected PathOverlay doInBackground(ArrayList<GeoPoint>... params) {
-		
+
 		myList = new ArrayList<GeoPoint>(params[0]);
-		
+
 		RoadManager roadManager = new MapQuestRoadManager();
 		road = roadManager.getRoad(params[0]);
 		roadManager.addRequestOption("routeType=pedestrian");
@@ -79,18 +85,22 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 			catch(Exception e){
 				e.printStackTrace();
 			}
-			final ArrayList<ExtendedOverlayItem> roadItems = new ArrayList<ExtendedOverlayItem>();
-			ItemizedOverlayWithBubble<ExtendedOverlayItem> roadNodes = new ItemizedOverlayWithBubble<ExtendedOverlayItem>(mContext, roadItems, mapView);
-			mapView.getOverlays().add(roadNodes);
-			//Drawable marker = mContext.getResources().getDrawable(R.drawable.marker_node);
-			for (int i=0; i<road.mNodes.size(); i++){
-				RoadNode node = road.mNodes.get(i);
-				Log.d("time", Double.toString(node.mDuration));
-				Log.d("time", Integer.toString(i));
-				ExtendedOverlayItem nodeMarker = new ExtendedOverlayItem(node.mInstructions, "Time: " +fromSecondToString((int)node.mDuration)+ "\nLenght: " + fromKilometersToMeters(node.mLength), node.mLocation);
-				nodeMarker.setMarkerHotspot(OverlayItem.HotspotPlace.CENTER);
-				//nodeMarker.setMarker(marker);
-				roadNodes.addItem(nodeMarker);
+			if(draw){
+				final ArrayList<ExtendedOverlayItem> roadItems = new ArrayList<ExtendedOverlayItem>();
+				ItemizedOverlayWithBubble<ExtendedOverlayItem> roadNodes = new ItemizedOverlayWithBubble<ExtendedOverlayItem>(mContext, roadItems, mapView);
+				mapView.getOverlays().add(roadNodes);
+				//			Drawable marker = mContext.getResources().getDrawable(R.drawable.marker_node);
+				//			int markerIcon = eu.trentorise.smartcampus.osm.android.R.drawable.marker_node;
+				Drawable icon = mProxy.getDrawable(bitmap.marker_node);
+				for (int i=0; i<road.mNodes.size(); i++){
+					RoadNode node = road.mNodes.get(i);
+					Log.d("time", Double.toString(node.mDuration));
+					Log.d("time", Integer.toString(i));
+					ExtendedOverlayItem nodeMarker = new ExtendedOverlayItem(node.mInstructions, "Time: " +fromSecondToString((int)node.mDuration)+ "\nLenght: " + fromKilometersToMeters(node.mLength), node.mLocation);
+					nodeMarker.setMarkerHotspot(OverlayItem.HotspotPlace.CENTER);
+					nodeMarker.setMarker(icon);
+					roadNodes.addItem(nodeMarker);
+				}
 			}
 		}
 		else{
@@ -106,7 +116,7 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 		if(dialog.isShowing())
 			dialog.dismiss();
 	}
-	
+
 	private String fromKilometersToMeters(double kilometers){
 		String toReturn = "";
 		int km = (int) Math.floor(kilometers);
