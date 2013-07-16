@@ -23,7 +23,7 @@ import android.widget.Toast;
 public class Geocoding {
 	/**
 	 * This class contains an AsyncTask that permits to convert a GeoPoint into an Address
-	 * You have to instace a new AsyncTask like this: <BR>
+	 * You have to allocate a new AsyncTask like this: <BR>
 	 * Geocoding.FromPointToAddress myTask = new Geocoding.FromPointToAddress(context);<BR>
 	 * myTask.execute(double arg[0], double arg[1]);<BR>
 	 * Address result = myTask.get();<BR>
@@ -109,7 +109,7 @@ public class Geocoding {
 
 	/**
 	 * This class contains an AsyncTask that permits to convert an Address into a GeoPoint
-	 * You have to instace a new AsyncTask like this:<BR>
+	 * You have to allocate a new AsyncTask like this:<BR>
 	 * Geocoding.FromAddressToPoint myTask = new Geocoding.FromAddressToPoint(context);<BR>
 	 * myTask.execute(String address);<BR>
 	 * GeoPoint result = myTask.get();<BR>

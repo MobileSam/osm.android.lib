@@ -14,30 +14,34 @@ import eu.trentorise.smartcampus.osm.android.views.overlay.PathOverlay;
  * Class to get a route between a start and a destination point, going through a list of waypoints. It uses MapQuest open, public and free API, based on OpenStreetMap data. 
  * See http://open.mapquestapi.com/guidance <BR>
  * This class contains an AsyncTask that permits to get the route
- * You have to instace a new AsyncTask like this: <BR>
+ * You have to allocate a new AsyncTask like this: <BR>
  * RoutingTask myTask = new RoutingTask(Context, MapView);<BR>
  * myTask.execute(ArrayList<GeoPoint>);<BR>
- * Address result = myTask.get();<BR>
- * @return Address if it works, else null
+ * This task draw the route itself
+ * @return a PathOverlay
  * @author Dylan Stenico
  */
 public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverlay> {
 
 	ProgressDialog dialog;
-    Context mContext;
-    Road road;
-    MapView mapView;
-    /**
-     * @param mContext
-     * the application context
-     * @param mapView
-     * a MapView object
-     */
-	public RoutingTask(Context mContext, MapView mapView) {
+	Context mContext;
+	Road road;
+	MapView mapView;
+	boolean draw;
+	/**
+	 * @param mContext
+	 * the application context
+	 * @param mapView
+	 * a MapView object
+	 * @param draw
+	 * set as true only to draw the path on the mapView
+	 */
+	public RoutingTask(Context mContext, MapView mapView, boolean draw) {
 		super();
 		this.mContext = mContext;
 		dialog = new ProgressDialog(mContext);
 		this.mapView = mapView;
+		this.draw = draw;
 	}
 
 	@Override
@@ -58,13 +62,15 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 	@Override
 	protected void onPostExecute(PathOverlay result) {
 		// TODO togliere il progress dialog e, se andata bene, aggiornare la listView
-		try{
-			PathOverlay roadOverlay = result;
-			mapView.getOverlays().add(roadOverlay);
-			mapView.invalidate();
-		}
-		catch(Exception e){
-			e.printStackTrace();
+		if(draw){
+			try{
+				PathOverlay roadOverlay = result;
+				mapView.getOverlays().add(roadOverlay);
+				mapView.invalidate();
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
 		}
 		if(dialog.isShowing())
 			dialog.dismiss();
