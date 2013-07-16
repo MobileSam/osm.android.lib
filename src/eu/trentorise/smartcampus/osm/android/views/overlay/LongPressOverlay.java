@@ -35,7 +35,7 @@ public class LongPressOverlay extends Overlay
 	{   
 		this.mapView = mapView;
 		//---when user lifts his finger---
-		Log.d("motionEvent", Integer.toString(event.getPointerCount()));
+		//Log.d("motionEvent", Integer.toString(event.getPointerCount()));
 		if (event.getAction() == event.ACTION_DOWN && event.getPointerCount() == 1){
 			time = System.currentTimeMillis();
 			x = event.getX();

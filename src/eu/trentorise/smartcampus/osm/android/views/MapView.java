@@ -234,7 +234,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 			@Override
 			public void onLongPressGesture(MotionEvent event) {
 				IGeoPoint point = mapView.getProjection().fromPixels(event.getX(),event.getY());
-				mapView.markersAdded.addItem(new ExtendedOverlayItem("Item",point.getLatitudeE6()/1E6 + ","+ point.getLongitudeE6()/1E6,new GeoPoint(point.getLatitudeE6()/1E6,point.getLongitudeE6()/1E6), mContext));
+				mapView.markersAdded.addItem(new ExtendedOverlayItem("Item",point.getLatitudeE6()/1E6 + ","+ point.getLongitudeE6()/1E6,new GeoPoint(point.getLatitudeE6()/1E6,point.getLongitudeE6()/1E6)));
 				mapView.invalidate();
 			}
 		});

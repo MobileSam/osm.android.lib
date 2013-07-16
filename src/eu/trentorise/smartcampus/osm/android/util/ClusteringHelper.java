@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
-import android.R;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,9 +17,6 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.util.Log;
 import android.util.SparseArray;
-import eu.trentorise.smartcampus.osm.android.ResourceProxy;
-import eu.trentorise.smartcampus.osm.android.util.BoundingBoxE6;
-import eu.trentorise.smartcampus.osm.android.util.GeoPoint;
 import eu.trentorise.smartcampus.osm.android.views.MapView;
 import eu.trentorise.smartcampus.osm.android.views.overlay.ItemizedIconOverlay;
 import eu.trentorise.smartcampus.osm.android.views.overlay.OverlayItem;

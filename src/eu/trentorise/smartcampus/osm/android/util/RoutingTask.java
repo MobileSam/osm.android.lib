@@ -4,18 +4,11 @@ import java.util.ArrayList;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import android.util.Log;
-import eu.trentorise.smartcampus.osm.android.R;
-import eu.trentorise.smartcampus.osm.android.bonuspack.overlays.ExtendedOverlayItem;
-import eu.trentorise.smartcampus.osm.android.bonuspack.overlays.ItemizedOverlayWithBubble;
 import eu.trentorise.smartcampus.osm.android.bonuspack.routing.MapQuestRoadManager;
 import eu.trentorise.smartcampus.osm.android.bonuspack.routing.Road;
 import eu.trentorise.smartcampus.osm.android.bonuspack.routing.RoadManager;
-import eu.trentorise.smartcampus.osm.android.bonuspack.routing.RoadNode;
 import eu.trentorise.smartcampus.osm.android.views.MapView;
-import eu.trentorise.smartcampus.osm.android.views.overlay.OverlayItem;
 import eu.trentorise.smartcampus.osm.android.views.overlay.PathOverlay;
 /**
  * Class to get a route between a start and a destination point, going through a list of waypoints. It uses MapQuest open, public and free API, based on OpenStreetMap data. 
@@ -79,21 +72,7 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 			catch(Exception e){
 				e.printStackTrace();
 			}
-			if(draw){
-				final ArrayList<ExtendedOverlayItem> roadItems = new ArrayList<ExtendedOverlayItem>();
-				ItemizedOverlayWithBubble<ExtendedOverlayItem> roadNodes = new ItemizedOverlayWithBubble<ExtendedOverlayItem>(mContext,roadItems,mapView);
-				mapView.getOverlays().add(roadNodes);
-				Drawable marker = mContext.getResources().getDrawable(R.drawable.marker_node);
-				for (int i=0; i<road.mNodes.size(); i++){
-					RoadNode node = road.mNodes.get(i);
-					Log.d("time", Double.toString(node.mDuration));
-					Log.d("time", Integer.toString(i));
-					ExtendedOverlayItem nodeMarker = new ExtendedOverlayItem(node.mInstructions, "Time: " +fromSecondToString((int)node.mDuration)+ "\nLenght: " + fromKilometersToMeters(node.mLength), node.mLocation, mContext);
-					nodeMarker.setMarkerHotspot(OverlayItem.HotspotPlace.CENTER);
-					nodeMarker.setMarker(marker);
-					roadNodes.addItem(nodeMarker);
-				}
-			}
+			
 		}
 		else{
 			if(!stop){
@@ -104,24 +83,8 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 			else
 				stop = false;
 		}
+		mapView.invalidate();
 		if(dialog.isShowing())
 			dialog.dismiss();
-	}
-
-	private String fromKilometersToMeters(double kilometers){
-		String toReturn = "";
-		int km = (int) Math.floor(kilometers);
-		int m = (int) ((kilometers - km) * 1000);
-		if(km > 0) toReturn += km + "km ";
-		return toReturn + m + "m";
-	}
-	private String fromSecondToString(int second){
-		String toReturn = "";
-		int sec = second % 60;
-		int min = ((second - sec) / 60) % 60;
-		int hour =  (int) Math.floor(second / 3600);
-		if(hour > 0) toReturn += hour +"h ";
-		if(min > 0)  toReturn += min +"m ";
-		return toReturn + sec + "s";
 	}
 }
