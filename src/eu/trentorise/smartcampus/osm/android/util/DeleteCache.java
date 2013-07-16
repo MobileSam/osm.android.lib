@@ -1,15 +1,14 @@
 package eu.trentorise.smartcampus.osm.android.util;
 
 import java.io.File;
-
-import android.os.Environment;
+import eu.trentorise.smartcampus.osm.android.tileprovider.constants.OSMapTileProviderConstants;
 /**
- * A class for handling the deletion of the osmdroid cache which would be saved in "/sdcard/osmdroid"
+ * A class for handling the deletion of the osmdroid cache which would be saved in "/Android/data/eu/trentorise/smartcampus/osm/android"
  * NO need to be instanciated
  * @author Michele Armellini
  *
  */
-public class DeleteCache {
+public class DeleteCache implements OSMapTileProviderConstants{
 
 	private static void deleteRecursive(File f) {
 		if (f.isDirectory())
@@ -23,8 +22,7 @@ public class DeleteCache {
 	 */
 	public static void deleteCache()
 	{
-		File f = new File(Environment.getExternalStorageDirectory().getPath()+"/osmdroid");
-		deleteRecursive(f);
+		deleteRecursive(OSMDROID_PATH);
 	}
 
 }
