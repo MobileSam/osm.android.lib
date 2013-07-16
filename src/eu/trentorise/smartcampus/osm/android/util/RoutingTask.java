@@ -5,10 +5,16 @@ import java.util.ArrayList;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
+
+import eu.trentorise.smartcampus.osm.android.bonuspack.overlays.ExtendedOverlayItem;
+import eu.trentorise.smartcampus.osm.android.bonuspack.overlays.ItemizedOverlayWithBubble;
 import eu.trentorise.smartcampus.osm.android.bonuspack.routing.MapQuestRoadManager;
 import eu.trentorise.smartcampus.osm.android.bonuspack.routing.Road;
 import eu.trentorise.smartcampus.osm.android.bonuspack.routing.RoadManager;
+import eu.trentorise.smartcampus.osm.android.bonuspack.routing.RoadNode;
 import eu.trentorise.smartcampus.osm.android.views.MapView;
+import eu.trentorise.smartcampus.osm.android.views.overlay.OverlayItem;
 import eu.trentorise.smartcampus.osm.android.views.overlay.PathOverlay;
 /**
  * Class to get a route between a start and a destination point, going through a list of waypoints. It uses MapQuest open, public and free API, based on OpenStreetMap data. 
@@ -22,24 +28,23 @@ import eu.trentorise.smartcampus.osm.android.views.overlay.PathOverlay;
  */
 public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverlay> {
 
-	ProgressDialog dialog;
 	Context mContext;
+	ProgressDialog dialog;
 	Road road;
 	MapView mapView;
-	boolean draw;
     boolean stop = false;
+    
+    boolean draw;
     ArrayList<GeoPoint> myList;
 	/**
-	 * @param mContext
-	 * the application context
-	 * @param mapView
+	 * @param mapViewO
 	 * a MapView object
 	 * @param draw
 	 * set as true only to draw the markers on the PathOverlay
 	 */
-	public RoutingTask(Context mContext, MapView mapView, boolean Drawmarker) {
+	public RoutingTask(Context context, MapView mapView, boolean Drawmarker) {
 		super();
-		this.mContext = mContext;
+		mContext = context;
 		dialog = new ProgressDialog(mContext);
 		this.mapView = mapView;
 		this.draw = Drawmarker;
@@ -54,8 +59,10 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 
 	@Override
 	protected PathOverlay doInBackground(ArrayList<GeoPoint>... params) {
-		RoadManager roadManager = new MapQuestRoadManager();
+		
 		myList = new ArrayList<GeoPoint>(params[0]);
+		
+		RoadManager roadManager = new MapQuestRoadManager();
 		road = roadManager.getRoad(params[0]);
 		roadManager.addRequestOption("routeType=pedestrian");
 		return RoadManager.buildRoadOverlay(road, mapView.getContext());
@@ -63,7 +70,7 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 
 	@Override
 	protected void onPostExecute(PathOverlay result) {
-		// TODO togliere il progress dialog e, se andata bene, aggiornare la listView
+
 		if(road.mNodes.size() > 0){
 			try{
 				mapView.getOverlays().add(result);
@@ -72,7 +79,19 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 			catch(Exception e){
 				e.printStackTrace();
 			}
-			
+			final ArrayList<ExtendedOverlayItem> roadItems = new ArrayList<ExtendedOverlayItem>();
+			ItemizedOverlayWithBubble<ExtendedOverlayItem> roadNodes = new ItemizedOverlayWithBubble<ExtendedOverlayItem>(mContext, roadItems, mapView);
+			mapView.getOverlays().add(roadNodes);
+			//Drawable marker = mContext.getResources().getDrawable(R.drawable.marker_node);
+			for (int i=0; i<road.mNodes.size(); i++){
+				RoadNode node = road.mNodes.get(i);
+				Log.d("time", Double.toString(node.mDuration));
+				Log.d("time", Integer.toString(i));
+				ExtendedOverlayItem nodeMarker = new ExtendedOverlayItem(node.mInstructions, "Time: " +fromSecondToString((int)node.mDuration)+ "\nLenght: " + fromKilometersToMeters(node.mLength), node.mLocation);
+				nodeMarker.setMarkerHotspot(OverlayItem.HotspotPlace.CENTER);
+				//nodeMarker.setMarker(marker);
+				roadNodes.addItem(nodeMarker);
+			}
 		}
 		else{
 			if(!stop){
@@ -86,5 +105,22 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 		mapView.invalidate();
 		if(dialog.isShowing())
 			dialog.dismiss();
+	}
+	
+	private String fromKilometersToMeters(double kilometers){
+		String toReturn = "";
+		int km = (int) Math.floor(kilometers);
+		int m = (int) ((kilometers - km) * 1000);
+		if(km > 0) toReturn += km + "km ";
+		return toReturn + m + "m";
+	}
+	private String fromSecondToString(int second){
+		String toReturn = "";
+		int sec = second % 60;
+		int min = ((second - sec) / 60) % 60;
+		int hour =  (int) Math.floor(second / 3600);
+		if(hour > 0) toReturn += hour +"h ";
+		if(min > 0)  toReturn += min +"m ";
+		return toReturn + sec + "s";
 	}
 }
