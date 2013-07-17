@@ -13,6 +13,7 @@ import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 /**
@@ -171,7 +172,10 @@ public class Geocoding {
 	 */
 	public static ArrayList<GeoPoint> FromAddressToPoint(String mAddress, Context mContext){
 		Geocoding.FromAddressToPoint getPoint = new Geocoding.FromAddressToPoint(mContext);
-		getPoint.execute(mAddress);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			getPoint.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mAddress);
+		else
+			getPoint.execute(mAddress);
 		ArrayList<GeoPoint> result = null;
 		try {
 			result = getPoint.get();
@@ -197,7 +201,10 @@ public class Geocoding {
 	 */
 	public static List<Address> FromPointToAddress(GeoPoint mPoint, Context mContext){
 		Geocoding.FromPointToAddress getAddress = new Geocoding.FromPointToAddress(mContext, true);
-		getAddress.execute(mPoint);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			getAddress.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mPoint);
+		else
+			getAddress.execute(mPoint);
 		List<Address> result = null;
 		try {
 			result = getAddress.get();

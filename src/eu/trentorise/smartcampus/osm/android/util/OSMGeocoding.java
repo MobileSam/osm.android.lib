@@ -13,6 +13,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.location.Address;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 /**
@@ -49,13 +50,15 @@ public class OSMGeocoding {
 			// TODO visualizzare il progress dialog
 			//dialog.setMessage("Loading...");
 			//dialog.show();
+			Log.w("indirizzo", "*************************");
 		}
 		@Override
 		protected List<Address> doInBackground(GeoPoint... params) {
+			Log.w("indirizzo", "[[[[[[[[[[[[[[[[[[[[[[[[[[[");
 			GeocoderNominatim myGeocoder = new GeocoderNominatim(mContext,Locale.getDefault());
 			List<Address> address = null;
 			try {
-				address = myGeocoder.getFromLocation(params[0].getLatitudeE6(), params[0].getLongitudeE6(), 5);
+				address = myGeocoder.getFromLocation(params[0].getLatitudeE6()/1E6, params[0].getLongitudeE6()/1E6, 5);
 				if(DEBUG_MODE)
 					Log.d("indirizzo", params[0] + "  " + params[1]);
 			}
@@ -171,7 +174,10 @@ public class OSMGeocoding {
 	 */
 	public static ArrayList<GeoPoint> FromAddressToPoint(String mAddress, Context mContext){
 		OSMGeocoding.FromAddressToPoint getPoint = new OSMGeocoding.FromAddressToPoint(mContext);
-		getPoint.execute(mAddress);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			getPoint.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mAddress);
+		else
+			getPoint.execute(mAddress);
 		ArrayList<GeoPoint> result = null;
 		try {
 			result = getPoint.get();
@@ -197,7 +203,12 @@ public class OSMGeocoding {
 	 */
 	public static List<Address> FromPointToAddress(GeoPoint mPoint, Context mContext){
 		OSMGeocoding.FromPointToAddress getAddress = new OSMGeocoding.FromPointToAddress(mContext, false);
-		getAddress.execute(mPoint);
+		
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
+			getAddress.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mPoint);
+		else
+			getAddress.execute(mPoint);
+		
 		List<Address> result = null;
 		try {
 			result = getAddress.get();
