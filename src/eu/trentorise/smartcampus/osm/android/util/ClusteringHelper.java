@@ -33,7 +33,7 @@ public class ClusteringHelper {
 	public static final String TITLE_CLUSTERED = "clusteredmarker";
 	private static List<List<List<OverlayItem>>> grid = new ArrayList<List<List<OverlayItem>>>();
 	private static SparseArray<int[]> item2group = new SparseArray<int[]>();
-	public synchronized static <T extends OverlayItem> List<OverlayItem> cluster(Context mContext, MapView map,	Collection<T> objects) {
+	public synchronized static <T extends OverlayItem, Item extends OverlayItem> List<T> cluster(Context mContext, MapView map,	Collection<Item> objects) {
 		mProxy = map.getResourceProxy();
 		item2group.clear();
 		// 2D array with some configurable, fixed density
@@ -75,7 +75,7 @@ public class ClusteringHelper {
 		int idx = 0;
 
 		try {
-			for (OverlayItem basicObject : objects) {
+			for (Item basicObject : objects) {
 				GeoPoint objLatLng = getGeoPointFromBasicObject(basicObject);
 				if (objLatLng != null && (objLatLng.getLongitudeE6() >= startX) && (objLatLng.getLongitudeE6() <= endX)	&& (objLatLng.getLatitudeE6() >= startY) && (objLatLng.getLatitudeE6() <= endY)) {
 					int binX = (int) (Math.abs((objLatLng.getLongitudeE6()) - startX) / step);
@@ -115,7 +115,7 @@ public class ClusteringHelper {
 
 		// generate markers
 
-		List<OverlayItem> markers = new ArrayList<OverlayItem>();
+		List<T> markers = new ArrayList<T>();
 
 
 		for (int i = 0; i < grid.size(); i++) {
@@ -126,12 +126,12 @@ public class ClusteringHelper {
 
 				if (markerList.size() > 1) {
 
-					markers.add(createGroupMarker(mContext, map, markerList, i, j));
+					markers.add((T) createGroupMarker(mContext, map, markerList, i, j));
 
 				} else if (markerList.size() == 1) {
 
 					// draw single marker
-					markers.add( createSingleMarker(mContext,markerList.get(0), i, j));
+					markers.add( (T) createSingleMarker(mContext,markerList.get(0), i, j));
 
 				}
 			}
@@ -142,34 +142,34 @@ public class ClusteringHelper {
 
 	}
 
-	public static  void render(MapView map, List<OverlayItem> markers) {
+	public static <T extends OverlayItem> void render(MapView map, List<T> markers) {
 
-			map.addMarkers((ArrayList<OverlayItem>) markers);
+			map.addMarkers((ArrayList<T>) markers);
 			if(map.getOverlays().get(map.getOverlays().size()-2) instanceof ItemizedIconOverlay<?>)
 				map.getOverlays().remove(map.getOverlays().size()-2);
 	}
 
 
-	private static  OverlayItem createSingleMarker(Context mContext,OverlayItem item, int x, int y) {
+	private static <T extends OverlayItem> T createSingleMarker(Context mContext,T item, int x, int y) {
 
 		GeoPoint latLng = getGeoPointFromBasicObject(item);
 
 		Bitmap icon = mProxy.getBitmap(bitmap.marker_poi_generic);
 		Drawable bd = new BitmapDrawable(writeOnMarker(mContext, icon,""));
 
-		OverlayItem marker =  new OverlayItem(x + ":" + y,"",latLng);
+		T marker =  (T) new OverlayItem(x + ":" + y,"",latLng);
 		marker.setMarker(bd);
 
 		//Log.d(TAG,"single");
 		return marker;
 	}
 
-	private static OverlayItem createGroupMarker(Context mContext, MapView map, List<OverlayItem> markerList, int x,int y) {
-		OverlayItem item = markerList.get(0);
+	private static <T extends OverlayItem> T createGroupMarker(Context mContext, MapView map, List<T> markerList, int x,int y) {
+		T item = markerList.get(0);
 		GeoPoint latLng = getGeoPointFromBasicObject(item);
 		Bitmap icon = mProxy.getBitmap(bitmap.marker_poi_generic);
 		Drawable bd = new BitmapDrawable(writeOnMarker(mContext, icon,Integer.toString(markerList.size())));
-		OverlayItem marker =  new OverlayItem(x + ":" + y,"",latLng);
+		T marker =  (T) new OverlayItem(x + ":" + y,"",latLng);
 		marker.setMarker(bd);
 		//Log.d(TAG,marker.getTitle());
 		return marker;
@@ -207,7 +207,7 @@ public class ClusteringHelper {
 	}
 
 
-	private static boolean checkDistanceAndMerge(int i, int j, List<OverlayItem> curr) {
+	private static  <T extends OverlayItem> boolean checkDistanceAndMerge(int i, int j, List<T> curr) {
 		List<OverlayItem> src = grid.get(i).get(j);
 		if (src.size() == 0) {
 			return false;
@@ -229,7 +229,7 @@ public class ClusteringHelper {
 
 	}
 
-	private static GeoPoint getGeoPointFromBasicObject(OverlayItem object) {
+	private static <T extends OverlayItem> GeoPoint getGeoPointFromBasicObject(T object) {
 
 		GeoPoint geoPoint = null;
 		geoPoint = object.getPoint();
