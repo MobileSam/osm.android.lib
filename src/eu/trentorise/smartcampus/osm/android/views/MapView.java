@@ -225,15 +225,15 @@ MultiTouchObjectCanvas<Object> {
 		return this.mController;
 	}
 
-	public void addClusteredMarkers(Context ctx,List<OverlayItem> aList,Drawable pMarker, Drawable pMarkerFocused,int pFocusedBackgroundColor,OnItemGestureListener<OverlayItem> aOnItemTapListener, ResourceProxy pResourceProxy){
+	public <T extends OverlayItem> void  addClusteredMarkers(Context ctx,List<T> aList,Drawable pMarker, Drawable pMarkerFocused,int pFocusedBackgroundColor,OnItemGestureListener<T> aOnItemTapListener, ResourceProxy pResourceProxy){
 		this.getOverlays().add(new ClusteredOverlay(ctx,aList, pMarker, pMarkerFocused, pFocusedBackgroundColor, aOnItemTapListener, pResourceProxy));
 	}
 
-	public void addClusteredMarkers(Context ctx, List<OverlayItem> aList,OnItemGestureListener<OverlayItem> aOnItemTapListener, ResourceProxy pResourceProxy){
+	public <T extends OverlayItem> void addClusteredMarkers(Context ctx, List<T> aList,OnItemGestureListener<T> aOnItemTapListener, ResourceProxy pResourceProxy){
 		this.getOverlays().add(new ClusteredOverlay(ctx, aList, aOnItemTapListener,pResourceProxy));
 	}
 
-	public void addClusteredMarkers(Context ctx,List<OverlayItem> aList,OnItemGestureListener<OverlayItem> aOnItemTapListener){
+	public <T extends OverlayItem> void addClusteredMarkers(Context ctx,List<T> aList,OnItemGestureListener<T> aOnItemTapListener){
 		this.getOverlays().add(new ClusteredOverlay(ctx, aList, aOnItemTapListener));
 	}
 
