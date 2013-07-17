@@ -56,9 +56,9 @@ public class Geocoding {
 			Geocoder myGeocoder = new Geocoder(mContext,Locale.getDefault());
 			List<Address> address = null;
 			try {
-				address = myGeocoder.getFromLocation(params[0].getLatitudeE6(), params[0].getLongitudeE6(), 5);
-				if(DEBUG_MODE)
-					Log.d("indirizzo", params[0] + "  " + params[1]);
+				address = myGeocoder.getFromLocation(params[0].getLatitudeE6() / 1E6, params[0].getLongitudeE6() / 1E6, 5);
+				if(DEBUG_MODE && address != null)
+					Log.d("indirizzo", params[0].getLatitudeE6() / 1E6 + "  " + params[0].getLongitudeE6() / 1E6);
 			}
 			catch (IOException e) {
 				connectionError = true;
@@ -75,13 +75,13 @@ public class Geocoding {
 		@Override
 		protected void onPostExecute(List<Address> result) {
 			// TODO togliere il progress dialog e, se andata bene, aggiornare la listView
-			try{
-				if(dialog.isShowing())
-					dialog.dismiss();
-			}catch(IllegalArgumentException e){
-				e.printStackTrace();
-			}
-			if(DEBUG_MODE){
+//			try{
+//				if(dialog.isShowing())
+//					dialog.dismiss();
+//			}catch(IllegalArgumentException e){
+//				e.printStackTrace();
+//			}
+			if(DEBUG_MODE && result != null){
 				try{
 					for(Address mResult : result){
 						Log.d("indirizzo", "*************************");

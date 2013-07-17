@@ -50,17 +50,15 @@ public class OSMGeocoding {
 			// TODO visualizzare il progress dialog
 			//dialog.setMessage("Loading...");
 			//dialog.show();
-			Log.w("indirizzo", "*************************");
 		}
 		@Override
 		protected List<Address> doInBackground(GeoPoint... params) {
-			Log.w("indirizzo", "[[[[[[[[[[[[[[[[[[[[[[[[[[[");
 			GeocoderNominatim myGeocoder = new GeocoderNominatim(mContext,Locale.getDefault());
 			List<Address> address = null;
 			try {
 				address = myGeocoder.getFromLocation(params[0].getLatitudeE6()/1E6, params[0].getLongitudeE6()/1E6, 5);
-				if(DEBUG_MODE)
-					Log.d("indirizzo", params[0] + "  " + params[1]);
+				if(DEBUG_MODE && address != null)
+					Log.d("indirizzo", params[0].getLatitudeE6() / 1E6 + "  " + params[0].getLongitudeE6() / 1E6);
 			}
 			catch (IOException e) {
 				connectionError = true;
@@ -83,7 +81,7 @@ public class OSMGeocoding {
 //			}catch(IllegalArgumentException e){
 //				e.printStackTrace();
 //			}
-			if(DEBUG_MODE){
+			if(DEBUG_MODE && result != null){
 				try{
 					for(Address mResult : result){
 						Log.d("indirizzo", "*************************");
