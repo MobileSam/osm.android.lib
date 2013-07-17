@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +17,7 @@ import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -58,6 +58,7 @@ import eu.trentorise.smartcampus.osm.android.util.GeometryMath;
 import eu.trentorise.smartcampus.osm.android.util.RoutingTask;
 import eu.trentorise.smartcampus.osm.android.util.TileSystem;
 import eu.trentorise.smartcampus.osm.android.util.constants.GeoConstants;
+import eu.trentorise.smartcampus.osm.android.views.overlay.ClusteredOverlay;
 import eu.trentorise.smartcampus.osm.android.views.overlay.ItemizedIconOverlay;
 import eu.trentorise.smartcampus.osm.android.views.overlay.ItemizedIconOverlay.OnItemGestureListener;
 import eu.trentorise.smartcampus.osm.android.views.overlay.ItemizedOverlayWithFocus;
@@ -224,6 +225,18 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		return this.mController;
 	}
 
+	public <T extends OverlayItem> void addClusteredMarkers(Context ctx,List<T> aList,Drawable pMarker, Drawable pMarkerFocused,int pFocusedBackgroundColor,OnItemGestureListener<T> aOnItemTapListener, ResourceProxy pResourceProxy){
+		this.getOverlays().add(new ClusteredOverlay<T>(ctx,aList, pMarker, pMarkerFocused, pFocusedBackgroundColor, aOnItemTapListener, pResourceProxy));
+	}
+	
+	public <T extends OverlayItem> void addClusteredMarkers(Context ctx, List<T> aList,OnItemGestureListener<T> aOnItemTapListener, ResourceProxy pResourceProxy){
+		this.getOverlays().add(new ClusteredOverlay<T>(ctx, aList, aOnItemTapListener,pResourceProxy));
+	}
+	
+	public <T extends OverlayItem>void addClusteredMarkers(Context ctx,List<T> aList,OnItemGestureListener<T> aOnItemTapListener){
+		this.getOverlays().add(new ClusteredOverlay<T>(ctx, aList, aOnItemTapListener));
+	}
+	
 	/**
 	 * This method create an Overlay which adds automatically a marker at the coordinates of the touch.
 	 * The marker has a default title and the coordinates as description.
@@ -246,8 +259,8 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 	 * @param items
 	 * ArrayList of OverlayItem that will be added
 	 */
-	public void addMarkers(ArrayList<OverlayItem> items){
-		ItemizedOverlayWithFocus<OverlayItem> currentLocationOverlay = new ItemizedOverlayWithFocus<OverlayItem>(items,new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+	public <T extends OverlayItem> void addMarkers(ArrayList<T> items){
+		ItemizedOverlayWithFocus<T> currentLocationOverlay = new ItemizedOverlayWithFocus<T>(items,new ItemizedIconOverlay.OnItemGestureListener<T>() {
 
 			@Override
 			public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
@@ -270,8 +283,8 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 	 * @param onGesture
 	 * Gesture Listener that will be attached to each Marker
 	 */
-	public void addMarkers(ArrayList<OverlayItem> items,OnItemGestureListener<OverlayItem> onGesture){
-		ItemizedOverlayWithFocus<OverlayItem> currentLocationOverlay = new ItemizedOverlayWithFocus<OverlayItem>(items,onGesture, this.getResourceProxy());
+	public <T extends OverlayItem> void addMarkers(ArrayList<T> items,OnItemGestureListener<T> onGesture){
+		ItemizedOverlayWithFocus<T> currentLocationOverlay = new ItemizedOverlayWithFocus<T>(items,onGesture, this.getResourceProxy());
 		this.getOverlays().add(currentLocationOverlay);
 	}
 	
@@ -281,14 +294,14 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 	 * @param points
 	 * ArrayList of Geopoints that have to be added to the mapView
 	 */
-	public void addMarkersFromPoints(ArrayList<GeoPoint> points){
+	public <T extends OverlayItem> void addMarkersFromPoints(ArrayList<GeoPoint> points){
 		
-		ArrayList<OverlayItem> items = new ArrayList<OverlayItem>();
+		ArrayList<T> items = new ArrayList<T>();
 		for(GeoPoint point : points)
 		{
-			items.add(new OverlayItem("Title","Description",point));
+			items.add((T) new OverlayItem("Title","Description",point));
 		}
-		ItemizedOverlayWithFocus<OverlayItem> currentLocationOverlay = new ItemizedOverlayWithFocus<OverlayItem>(items,new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+		ItemizedOverlayWithFocus<T> currentLocationOverlay = new ItemizedOverlayWithFocus<T>(items,new ItemizedIconOverlay.OnItemGestureListener<T>() {
 
 			@Override
 			public boolean onItemSingleTapUp(final int index, final OverlayItem item) {

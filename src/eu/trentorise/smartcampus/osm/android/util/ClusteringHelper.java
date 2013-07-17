@@ -31,7 +31,7 @@ public class ClusteringHelper {
 	public static final String TITLE_CLUSTERED = "clusteredmarker";
 	private static List<List<List<OverlayItem>>> grid = new ArrayList<List<List<OverlayItem>>>();
 	private static SparseArray<int[]> item2group = new SparseArray<int[]>();
-	public synchronized static <T extends OverlayItem> List<OverlayItem> cluster(Context mContext, MapView map,	Collection<T> objects) {
+	public synchronized static <T extends OverlayItem> List<T> cluster(Context mContext, MapView map,	Collection<T> objects) {
 
 		item2group.clear();
 		// 2D array with some configurable, fixed density
@@ -113,7 +113,7 @@ public class ClusteringHelper {
 
 		// generate markers
 
-		List<OverlayItem> markers = new ArrayList<OverlayItem>();
+		List<T> markers = new ArrayList<T>();
 
 
 		for (int i = 0; i < grid.size(); i++) {
@@ -124,12 +124,12 @@ public class ClusteringHelper {
 
 				if (markerList.size() > 1) {
 
-					markers.add(createGroupMarker(mContext, map, markerList, i, j));
+					markers.add((T) createGroupMarker(mContext, map, markerList, i, j));
 
 				} else if (markerList.size() == 1) {
 
 					// draw single marker
-					markers.add(createSingleMarker(mContext,markerList.get(0), i, j));
+					markers.add((T) createSingleMarker(mContext,markerList.get(0), i, j));
 
 				}
 			}
@@ -140,15 +140,15 @@ public class ClusteringHelper {
 
 	}
 
-	public static void render(MapView map, List<OverlayItem> markers) {
+	public static <T extends OverlayItem> void render(MapView map, List<T> markers) {
 
-			map.addMarkers((ArrayList<OverlayItem>) markers);
+			map.addMarkers((ArrayList<T>) markers);
 			if(map.getOverlays().get(map.getOverlays().size()-2) instanceof ItemizedIconOverlay<?>)
 				map.getOverlays().remove(map.getOverlays().size()-2);
 	}
 
 
-	private static OverlayItem createSingleMarker(Context mContext,OverlayItem item, int x, int y) {
+	private static <T extends OverlayItem> T createSingleMarker(Context mContext,OverlayItem item, int x, int y) {
 
 		GeoPoint latLng = getGeoPointFromBasicObject(item);
 
@@ -156,19 +156,19 @@ public class ClusteringHelper {
 		int markerIcon = eu.trentorise.smartcampus.osm.android.R.drawable.marker_poi_generic;
 		Drawable bd = new BitmapDrawable(writeOnMarker(mContext, markerIcon,""));
 
-		OverlayItem marker = new OverlayItem(x + ":" + y,"",latLng);
+		T marker = (T) new OverlayItem(x + ":" + y,"",latLng);
 		marker.setMarker(bd);
 
 		//Log.d(TAG,"single");
 		return marker;
 	}
 
-	private static OverlayItem createGroupMarker(Context mContext, MapView map, List<OverlayItem> markerList, int x,int y) {
+	private static <T extends OverlayItem> T createGroupMarker(Context mContext, MapView map, List<OverlayItem> markerList, int x,int y) {
 		OverlayItem item = markerList.get(0);
 		GeoPoint latLng = getGeoPointFromBasicObject(item);
 		int markerIcon = eu.trentorise.smartcampus.osm.android.R.drawable.marker_poi_generic;
 		Drawable bd = new BitmapDrawable(writeOnMarker(mContext, markerIcon,Integer.toString(markerList.size())));
-		OverlayItem marker = new OverlayItem(x + ":" + y,"",latLng);
+		T marker = (T) new OverlayItem(x + ":" + y,"",latLng);
 		marker.setMarker(bd);
 		//Log.d(TAG,marker.getTitle());
 		return marker;
