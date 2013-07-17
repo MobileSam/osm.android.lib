@@ -94,9 +94,9 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 				for (int i=0; i<road.mNodes.size(); i++){
 					RoadNode node = road.mNodes.get(i);
 					Log.d("time", Double.toString(node.mDuration));
-					Log.d("time", Integer.toString(i));
+					Log.d("time", Integer.toString(i));  
 					ExtendedOverlayItem nodeMarker = new ExtendedOverlayItem(node.mInstructions, "Time: " +fromSecondToString((int)node.mDuration)+ "\nLenght: " + fromKilometersToMeters(node.mLength), node.mLocation);
-					nodeMarker.setMarkerHotspot(OverlayItem.HotspotPlace.CENTER);
+					nodeMarker.setMarkerHotspot(OverlayItem.HotspotPlace.BOTTOM_CENTER);
 					nodeMarker.setMarker(icon);
 					roadNodes.addItem(nodeMarker);
 				}
