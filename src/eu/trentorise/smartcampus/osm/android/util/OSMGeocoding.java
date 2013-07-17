@@ -1,8 +1,10 @@
 package eu.trentorise.smartcampus.osm.android.util;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import eu.trentorise.smartcampus.osm.android.bonuspack.location.GeocoderNominatim;
 import eu.trentorise.smartcampus.osm.android.util.GeoPoint;
@@ -21,45 +23,41 @@ import android.widget.Toast;
  * @author Dylan Stenico
  */
 public class OSMGeocoding {
-	/**
-	 * This class contains an AsyncTask that permits to convert a GeoPoint into an Address
-	 * You have to allocate a new AsyncTask like this: <BR>
-	 * OSMGeocoding.FromPointToAddress myTask = new OSMGeocoding.FromPointToAddress(context);<BR>
-	 * myTask.execute(double arg[0], double arg[1]);<BR>
-	 * Address result = myTask.get();<BR>
-	 * @return Address if it works, else null
-	 */
-	public static class FromPointToAddress extends AsyncTask<Double,Integer,Address> {
 
+	private static class FromPointToAddress extends AsyncTask<GeoPoint,Integer,List<Address>> {
 		ProgressDialog dialog;
 		Context mContext;
 		private boolean connectionError = false;
 		private boolean addressError = false;
-		List<Address> address;
+
+		private boolean DEBUG_MODE = false;
+
 		/**
 		 * @param mContext
 		 * the Application Context
+		 * @param debug
+		 * set as true only to enter in debug mode and let the application write on the Log
 		 */
-
-		public FromPointToAddress(Context mContext) {
+		public FromPointToAddress(Context mContext, boolean debug) {
 			super();
+			DEBUG_MODE = debug;
 			this.mContext = mContext;
 			dialog = new ProgressDialog(mContext);
 		}
-
 		@Override
 		protected void onPreExecute() {
 			// TODO visualizzare il progress dialog
 			dialog.setMessage("Loading...");
 			dialog.show();
 		}
-
 		@Override
-		protected Address doInBackground(Double... params) {
+		protected List<Address> doInBackground(GeoPoint... params) {
 			GeocoderNominatim myGeocoder = new GeocoderNominatim(mContext,Locale.getDefault());
+			List<Address> address = null;
 			try {
-				address = myGeocoder.getFromLocation(params[0], params[1], 1);
-				Log.d("indirizzo", params[0] + "  " + params[1]);
+				address = myGeocoder.getFromLocation(params[0].getLatitudeE6(), params[0].getLongitudeE6(), 5);
+				if(DEBUG_MODE)
+					Log.d("indirizzo", params[0] + "  " + params[1]);
 			}
 			catch (IOException e) {
 				connectionError = true;
@@ -70,54 +68,41 @@ public class OSMGeocoding {
 				e.printStackTrace();
 			}
 			if((address == null || address.size() == 0) && !connectionError) addressError = true;
-			if(!connectionError && !addressError){
-				return address.get(0);
-			}
-			else{
-				return null;
-			}
+			return address;
 		}
 
 		@Override
-		protected void onPostExecute(Address result) {
+		protected void onPostExecute(List<Address> result) {
 			// TODO togliere il progress dialog e, se andata bene, aggiornare la listView
 			try{
 				if(dialog.isShowing())
 					dialog.dismiss();
-			} catch(IllegalArgumentException e){
+			}catch(IllegalArgumentException e){
 				e.printStackTrace();
 			}
-			try{
-				Log.d("indirizzo", result.getAddressLine(0));
-				Log.d("indirizzo", result.getAddressLine(1));
-				Log.d("indirizzo", result.getAddressLine(2));
-			}
-			catch(IllegalArgumentException e){
-				e.printStackTrace();
-			}
-			catch(NullPointerException e){
-				e.printStackTrace();
-			}
+			if(DEBUG_MODE){
+				try{
+					for(Address mResult : result){
+						Log.d("indirizzo", "*************************");
+						Log.d("indirizzo", mResult.getAddressLine(0));
+						Log.d("indirizzo", mResult.getAddressLine(1));
+						Log.d("indirizzo", mResult.getAddressLine(2));
+					}
+				}
+				catch(IllegalArgumentException e){
+					e.printStackTrace();
+				}
+				catch(NullPointerException e){
+					e.printStackTrace();
+				}}
 			if     (connectionError)  Toast.makeText(mContext, "Connection Error", Toast.LENGTH_SHORT).show();
 			else if(addressError)     Toast.makeText(mContext, "Address Error",    Toast.LENGTH_SHORT).show();
 		}
 	}
 
-	/**
-	 * This class contains an AsyncTask that permits to convert an Address into a GeoPoint
-	 * You have to allocate a new AsyncTask like this:<BR>
-	 * OSMGeocoding.FromAddressToPoint myTask = new OSMGeocoding.FromAddressToPoint(context);<BR>
-	 * myTask.execute(String address);<BR>
-	 * GeoPoint result = myTask.get();<BR>
-	 * @return GeoPoint if it works, else null
-	 */
-
-
-	public static class FromAddressToPoint extends AsyncTask<String,Integer,GeoPoint> {
-
+	private static class FromAddressToPoint extends AsyncTask<String,Integer,ArrayList<GeoPoint>> {
 		ProgressDialog dialog;
 		Context mContext;
-		String myAddress;
 		boolean connectionError = false;
 		boolean addressError = false;
 
@@ -137,15 +122,13 @@ public class OSMGeocoding {
 			dialog.setMessage("Loading...");
 			dialog.show();
 		}
-
 		@Override
-		protected GeoPoint doInBackground(String... params){
-			myAddress = params[0];
+		protected ArrayList<GeoPoint> doInBackground(String... params){
 			GeocoderNominatim myGeocoder = new GeocoderNominatim(mContext,Locale.ITALY);
 			List<Address> risultati = null;
-			Address address = null;
+			ArrayList<GeoPoint> toReturn = null;
 			try {
-				risultati = myGeocoder.getFromLocationName(params[0], 1);
+				risultati = myGeocoder.getFromLocationName(params[0], 5);
 			} 
 			catch (IOException e) {
 				connectionError = true;
@@ -156,18 +139,19 @@ public class OSMGeocoding {
 				e.printStackTrace();
 			}
 			if((risultati == null || risultati.size() == 0) && !connectionError) addressError = true;
-			if(connectionError || addressError){
-				return null;
+			if(!connectionError && !addressError){
+				toReturn = new ArrayList<GeoPoint>();
+				for(int i = 0; i < risultati.size(); i++){
+					Address address = risultati.get(i);
+					//Log.d("COORDINATES", (double)address.getLatitude() + "    " +(double)address.getLongitude());
+					toReturn.add(new GeoPoint((double)address.getLatitude(),(double)address.getLongitude()));
+				}
 			}
-			else{
-				address = risultati.get(0);
-				Log.d("COORDINATES", (double)address.getLatitude() + "    " +(double)address.getLongitude());
-				return new GeoPoint((double)address.getLatitude(),(double)address.getLongitude());
-			}
+			return toReturn;
 		}
 
 		@Override
-		protected void onPostExecute(GeoPoint result) {
+		protected void onPostExecute(ArrayList<GeoPoint> result) {
 			// TODO togliere il progress dialog e, se andata bene, aggiornare la listView
 
 			if(dialog.isShowing())
@@ -176,5 +160,54 @@ public class OSMGeocoding {
 			else if(addressError)     Toast.makeText(mContext, "Address Error",    Toast.LENGTH_SHORT).show();
 		}
 	}
+	/**
+	 * Returns an array of Addresses that are known to describe the area immediately surrounding the given latitude and longitude. The returned addresses will be localized for the locale provided to this class's constructor.
+	 * @param mAddress
+	 * a String describes the location
+	 * @param mContext
+	 * the Application context
+	 * @return
+	 * ArrayList of GeoPoint
+	 */
+	public static ArrayList<GeoPoint> FromAddressToPoint(String mAddress, Context mContext){
+		OSMGeocoding.FromAddressToPoint getPoint = new OSMGeocoding.FromAddressToPoint(mContext);
+		getPoint.execute(mAddress);
+		ArrayList<GeoPoint> result = null;
+		try {
+			result = getPoint.get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
 
+	/**
+	 * Returns a list of Addresses that are known to describe the named location, which may be a place name such as "Dalvik, Iceland", an address such as "1600 Amphitheatre Parkway, Mountain View, CA", 
+	 * an airport code such as "SFO", etc.. .
+	 * @param mPoint
+	 * a Point describe the position
+	 * @param mContext
+	 * the Application context
+	 * @return
+	 * List of Address
+	 */
+	public static List<Address> FromPointToAddress(GeoPoint mPoint, Context mContext){
+		OSMGeocoding.FromPointToAddress getAddress = new OSMGeocoding.FromPointToAddress(mContext, false);
+		getAddress.execute(mPoint);
+		List<Address> result = null;
+		try {
+			result = getAddress.get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+	}
 }
