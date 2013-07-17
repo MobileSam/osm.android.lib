@@ -7,7 +7,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
@@ -17,6 +16,8 @@ import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.util.Log;
 import android.util.SparseArray;
+import eu.trentorise.smartcampus.osm.android.ResourceProxy;
+import eu.trentorise.smartcampus.osm.android.ResourceProxy.bitmap;
 import eu.trentorise.smartcampus.osm.android.views.MapView;
 import eu.trentorise.smartcampus.osm.android.views.overlay.ItemizedIconOverlay;
 import eu.trentorise.smartcampus.osm.android.views.overlay.OverlayItem;
@@ -25,14 +26,15 @@ public class ClusteringHelper {
 
 	private static final String TAG = "MapManager.ClusteringHelper";
 
+	static ResourceProxy mProxy;
 	Context context;
 	private static final int DENSITY_X = 10;
 	private static final int DENSITY_Y = 15;
 	public static final String TITLE_CLUSTERED = "clusteredmarker";
 	private static List<List<List<OverlayItem>>> grid = new ArrayList<List<List<OverlayItem>>>();
 	private static SparseArray<int[]> item2group = new SparseArray<int[]>();
-	public synchronized static <T extends OverlayItem> List<T> cluster(Context mContext, MapView map,	Collection<T> objects) {
-
+	public synchronized static <T extends OverlayItem> List<OverlayItem> cluster(Context mContext, MapView map,	Collection<T> objects) {
+		mProxy = map.getResourceProxy();
 		item2group.clear();
 		// 2D array with some configurable, fixed density
 		grid.clear();
@@ -113,7 +115,7 @@ public class ClusteringHelper {
 
 		// generate markers
 
-		List<T> markers = new ArrayList<T>();
+		List<OverlayItem> markers = new ArrayList<OverlayItem>();
 
 
 		for (int i = 0; i < grid.size(); i++) {
@@ -124,12 +126,12 @@ public class ClusteringHelper {
 
 				if (markerList.size() > 1) {
 
-					markers.add((T) createGroupMarker(mContext, map, markerList, i, j));
+					markers.add(createGroupMarker(mContext, map, markerList, i, j));
 
 				} else if (markerList.size() == 1) {
 
 					// draw single marker
-					markers.add((T) createSingleMarker(mContext,markerList.get(0), i, j));
+					markers.add( createSingleMarker(mContext,markerList.get(0), i, j));
 
 				}
 			}
@@ -140,45 +142,44 @@ public class ClusteringHelper {
 
 	}
 
-	public static <T extends OverlayItem> void render(MapView map, List<T> markers) {
+	public static  void render(MapView map, List<OverlayItem> markers) {
 
-			map.addMarkers((ArrayList<T>) markers);
+			map.addMarkers((ArrayList<OverlayItem>) markers);
 			if(map.getOverlays().get(map.getOverlays().size()-2) instanceof ItemizedIconOverlay<?>)
 				map.getOverlays().remove(map.getOverlays().size()-2);
 	}
 
 
-	private static <T extends OverlayItem> T createSingleMarker(Context mContext,OverlayItem item, int x, int y) {
+	private static  OverlayItem createSingleMarker(Context mContext,OverlayItem item, int x, int y) {
 
 		GeoPoint latLng = getGeoPointFromBasicObject(item);
 
+		Bitmap icon = mProxy.getBitmap(bitmap.marker_poi_generic);
+		Drawable bd = new BitmapDrawable(writeOnMarker(mContext, icon,""));
 
-		int markerIcon = eu.trentorise.smartcampus.osm.android.R.drawable.marker_poi_generic;
-		Drawable bd = new BitmapDrawable(writeOnMarker(mContext, markerIcon,""));
-
-		T marker = (T) new OverlayItem(x + ":" + y,"",latLng);
+		OverlayItem marker =  new OverlayItem(x + ":" + y,"",latLng);
 		marker.setMarker(bd);
 
 		//Log.d(TAG,"single");
 		return marker;
 	}
 
-	private static <T extends OverlayItem> T createGroupMarker(Context mContext, MapView map, List<OverlayItem> markerList, int x,int y) {
+	private static OverlayItem createGroupMarker(Context mContext, MapView map, List<OverlayItem> markerList, int x,int y) {
 		OverlayItem item = markerList.get(0);
 		GeoPoint latLng = getGeoPointFromBasicObject(item);
-		int markerIcon = eu.trentorise.smartcampus.osm.android.R.drawable.marker_poi_generic;
-		Drawable bd = new BitmapDrawable(writeOnMarker(mContext, markerIcon,Integer.toString(markerList.size())));
-		T marker = (T) new OverlayItem(x + ":" + y,"",latLng);
+		Bitmap icon = mProxy.getBitmap(bitmap.marker_poi_generic);
+		Drawable bd = new BitmapDrawable(writeOnMarker(mContext, icon,Integer.toString(markerList.size())));
+		OverlayItem marker =  new OverlayItem(x + ":" + y,"",latLng);
 		marker.setMarker(bd);
 		//Log.d(TAG,marker.getTitle());
 		return marker;
 
 	}
 
-	private static Bitmap writeOnMarker(Context mContext, int drawableId, String text) {
+	private static Bitmap writeOnMarker(Context mContext, Bitmap icon, String text) {
 
 		float scale = mContext.getResources().getDisplayMetrics().density;
-		Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), drawableId).copy(Bitmap.Config.ARGB_8888,true);
+		Bitmap bitmap = icon;
 		Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		paint.setTextAlign(Align.CENTER);
 		paint.setTextSize(scale * 14);

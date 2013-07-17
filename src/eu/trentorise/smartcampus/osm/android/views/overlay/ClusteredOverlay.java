@@ -12,9 +12,9 @@ import eu.trentorise.smartcampus.osm.android.views.MapView;
 import eu.trentorise.smartcampus.osm.android.views.overlay.ItemizedOverlayWithFocus;
 import eu.trentorise.smartcampus.osm.android.views.overlay.OverlayItem;
 
-public class  ClusteredOverlay<T extends OverlayItem> extends ItemizedOverlayWithFocus<T> {
-	List<T> myList = null;
-	List<T> aList = null;
+public class  ClusteredOverlay extends ItemizedOverlayWithFocus<OverlayItem> {
+	List<OverlayItem> myList = null;
+	List<OverlayItem> aList = null;
 	Context mContext;
 	
 
@@ -23,8 +23,8 @@ public class  ClusteredOverlay<T extends OverlayItem> extends ItemizedOverlayWit
 	
 	public ClusteredOverlay(
 			Context ctx,
-			List<T> aList,
-			OnItemGestureListener<T> aOnItemTapListener) {
+			List<OverlayItem> aList,
+			OnItemGestureListener<OverlayItem> aOnItemTapListener) {
 		super(ctx, aList, aOnItemTapListener);
 		// TODO Auto-generated constructor stub
 		mContext = ctx;
@@ -36,11 +36,11 @@ public class  ClusteredOverlay<T extends OverlayItem> extends ItemizedOverlayWit
 
 
 	public ClusteredOverlay(Context ctx,
-			List<T> aList,
+			List<OverlayItem> aList,
 			Drawable pMarker,
 			Drawable pMarkerFocused,
 			int pFocusedBackgroundColor,
-			OnItemGestureListener<T> aOnItemTapListener,
+			OnItemGestureListener<OverlayItem> aOnItemTapListener,
 			ResourceProxy pResourceProxy) {
 		super(aList, pMarker, pMarkerFocused, pFocusedBackgroundColor,
 				aOnItemTapListener, pResourceProxy);
@@ -53,8 +53,8 @@ public class  ClusteredOverlay<T extends OverlayItem> extends ItemizedOverlayWit
 
 
 	public ClusteredOverlay(Context ctx,
-			List<T> aList,
-			OnItemGestureListener<T> aOnItemTapListener,
+			List<OverlayItem> aList,
+			OnItemGestureListener<OverlayItem> aOnItemTapListener,
 			ResourceProxy pResourceProxy) {
 		super(aList, aOnItemTapListener, pResourceProxy);
 		this.aList = aList;

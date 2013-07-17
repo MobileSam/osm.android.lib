@@ -26,7 +26,7 @@ public interface ResourceProxy {
 		 */
 		unknown,
 
-		center, direction_arrow, marker_default, marker_default_focused_base, navto_small, next, previous, person, marker_poi_generic , marker_node ,
+		center, direction_arrow, marker_default, marker_default_focused_base, navto_small, next, previous, person , marker_node, marker_poi_generic,
 
 		/**
 		 * Menu icons
