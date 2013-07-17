@@ -129,7 +129,7 @@ public class ExtendedOverlayItem extends OverlayItem {
 	 */
 	public void showBubble(InfoWindow bubble, MapView mapView, boolean panIntoView){
 		//offset the bubble to be top-centered on the marker:
-		Drawable marker = getMarker(0 /*OverlayItem.ITEM_STATE_FOCUSED_MASK*/);
+		Drawable marker = getMarker(OverlayItem.ITEM_STATE_FOCUSED_MASK);
 		int markerWidth = 0, markerHeight = 0;
 		if (marker != null){
 			markerWidth = marker.getIntrinsicWidth(); 
@@ -137,7 +137,7 @@ public class ExtendedOverlayItem extends OverlayItem {
 		} //else... we don't have the default marker size => don't user default markers!!!
 		Point markerH = getHotspot(getMarkerHotspot(), markerWidth, markerHeight);
 		Point bubbleH = getHotspot(HotspotPlace.TOP_CENTER, markerWidth, markerHeight);
-		bubbleH.offset(markerH.x, -markerH.y);
+		bubbleH.offset(-markerH.x, markerH.y);
 	
 		
 		bubble.open(this, bubbleH.x, bubbleH.y);
