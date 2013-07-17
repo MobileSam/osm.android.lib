@@ -72,7 +72,7 @@ import eu.trentorise.smartcampus.osm.android.views.safecanvas.ISafeCanvas;
 import eu.trentorise.smartcampus.osm.android.views.util.constants.MapViewConstants;
 
 public class MapView extends ViewGroup implements IMapView, MapViewConstants,
-		MultiTouchObjectCanvas<Object> {
+MultiTouchObjectCanvas<Object> {
 
 	// ===========================================================
 	// Constants
@@ -112,7 +112,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 	protected Integer mMaximumZoomLevel;
 
 	private final MapController mController;
-
+	private boolean scrollable = true;
 	private final ZoomButtonsController mZoomController;
 	private boolean mEnableZoomController = false;
 
@@ -164,25 +164,25 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 
 		mTileRequestCompleteHandler = tileRequestCompleteHandler == null ? new SimpleInvalidationHandler(
 				this) : tileRequestCompleteHandler;
-		mTileProvider = tileProvider;
-		mTileProvider.setTileRequestCompleteHandler(mTileRequestCompleteHandler);
+				mTileProvider = tileProvider;
+				mTileProvider.setTileRequestCompleteHandler(mTileRequestCompleteHandler);
 
-		this.mMapOverlay = new TilesOverlay(mTileProvider, mResourceProxy);
-		mOverlayManager = new OverlayManager(mMapOverlay);
+				this.mMapOverlay = new TilesOverlay(mTileProvider, mResourceProxy);
+				mOverlayManager = new OverlayManager(mMapOverlay);
 
-		this.mZoomController = new ZoomButtonsController(this);
-		this.mZoomController.setOnZoomListener(new MapViewZoomListener());
+				this.mZoomController = new ZoomButtonsController(this);
+				this.mZoomController.setOnZoomListener(new MapViewZoomListener());
 
-		mZoomInAnimation = new ScaleAnimation(1, 2, 1, 2, Animation.RELATIVE_TO_SELF, 0.5f,
-				Animation.RELATIVE_TO_SELF, 0.5f);
-		mZoomOutAnimation = new ScaleAnimation(1, 0.5f, 1, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f,
-				Animation.RELATIVE_TO_SELF, 0.5f);
-		mZoomInAnimation.setDuration(ANIMATION_DURATION_SHORT);
-		mZoomOutAnimation.setDuration(ANIMATION_DURATION_SHORT);
+				mZoomInAnimation = new ScaleAnimation(1, 2, 1, 2, Animation.RELATIVE_TO_SELF, 0.5f,
+						Animation.RELATIVE_TO_SELF, 0.5f);
+				mZoomOutAnimation = new ScaleAnimation(1, 0.5f, 1, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f,
+						Animation.RELATIVE_TO_SELF, 0.5f);
+				mZoomInAnimation.setDuration(ANIMATION_DURATION_SHORT);
+				mZoomOutAnimation.setDuration(ANIMATION_DURATION_SHORT);
 
-		mGestureDetector = new GestureDetector(context, new MapViewGestureDetectorListener());
-		mGestureDetector.setOnDoubleTapListener(new MapViewDoubleClickListener());
-		this.setTileSource(TileSourceFactory.MAPNIK);
+				mGestureDetector = new GestureDetector(context, new MapViewGestureDetectorListener());
+				mGestureDetector.setOnDoubleTapListener(new MapViewDoubleClickListener());
+				this.setTileSource(TileSourceFactory.MAPNIK);
 	}
 
 	/**
@@ -228,15 +228,15 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 	public <T extends OverlayItem> void addClusteredMarkers(Context ctx,List<T> aList,Drawable pMarker, Drawable pMarkerFocused,int pFocusedBackgroundColor,OnItemGestureListener<T> aOnItemTapListener, ResourceProxy pResourceProxy){
 		this.getOverlays().add(new ClusteredOverlay<T>(ctx,aList, pMarker, pMarkerFocused, pFocusedBackgroundColor, aOnItemTapListener, pResourceProxy));
 	}
-	
+
 	public <T extends OverlayItem> void addClusteredMarkers(Context ctx, List<T> aList,OnItemGestureListener<T> aOnItemTapListener, ResourceProxy pResourceProxy){
 		this.getOverlays().add(new ClusteredOverlay<T>(ctx, aList, aOnItemTapListener,pResourceProxy));
 	}
-	
+
 	public <T extends OverlayItem>void addClusteredMarkers(Context ctx,List<T> aList,OnItemGestureListener<T> aOnItemTapListener){
 		this.getOverlays().add(new ClusteredOverlay<T>(ctx, aList, aOnItemTapListener));
 	}
-	
+
 	/**
 	 * This method create an Overlay which adds automatically a marker at the coordinates of the touch.
 	 * The marker has a default title and the coordinates as description.
@@ -253,7 +253,15 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 			}
 		});
 	}
-	
+
+	public boolean isScrollable() {
+		return scrollable;
+	}
+
+	public void setScrollable(boolean scrollable) {
+		this.scrollable = scrollable;
+	}
+
 	/**
 	 * Adds a new Overlay to the mapView containing the markers with a default GestureListener attached 
 	 * @param items
@@ -287,7 +295,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		ItemizedOverlayWithFocus<T> currentLocationOverlay = new ItemizedOverlayWithFocus<T>(items,onGesture, this.getResourceProxy());
 		this.getOverlays().add(currentLocationOverlay);
 	}
-	
+
 	/**
 	 * Add a new Overlay to the map containing the markers on each GeoPoint passed.
 	 * (default Title and Description are added)
@@ -295,7 +303,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 	 * ArrayList of Geopoints that have to be added to the mapView
 	 */
 	public <T extends OverlayItem> void addMarkersFromPoints(ArrayList<GeoPoint> points){
-		
+
 		ArrayList<T> items = new ArrayList<T>();
 		for(GeoPoint point : points)
 		{
@@ -317,18 +325,18 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 
 		this.getOverlays().add(currentLocationOverlay);
 	}
-	
-/**
- * Build a {@link PathOverlay} by calling {@link RoutingTask} and draws it on the mapView
- * @param points
- * An ArrayList<GeoPoint> that represents the Points on which the path should pass
- */
+
+	/**
+	 * Build a {@link PathOverlay} by calling {@link RoutingTask} and draws it on the mapView
+	 * @param points
+	 * An ArrayList<GeoPoint> that represents the Points on which the path should pass
+	 */
 	public void drawPath(ArrayList<GeoPoint> points)
 	{
 		RoutingTask route = new RoutingTask(getContext(), this, true);
 		route.execute(points);
 	}
-	
+
 	/**
 	 * You can add/remove/reorder your Overlays using the List of {@link Overlay}. The first (index
 	 * 0) Overlay gets drawn first, the one with the highest as the last one.
@@ -459,7 +467,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		final int curZoomLevel = this.mZoomLevel;
 
 		if (newZoomLevel != curZoomLevel) {
-		    mScroller.forceFinished(true);
+			mScroller.forceFinished(true);
 			mIsFlinging = false;
 		}
 
@@ -481,7 +489,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 			// We are going from a higher-resolution plane to a lower-resolution plane, so we can do
 			// it the easy way.
 			scrollTo(getScrollX() >> curZoomLevel - newZoomLevel,
-					 getScrollY() >> curZoomLevel - newZoomLevel);
+			getScrollY() >> curZoomLevel - newZoomLevel);
 		}
 
 		// snap for all snappables
@@ -513,35 +521,35 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		final BoundingBoxE6 currentBox = getBoundingBox();
 
 		// Calculated required zoom based on latitude span
-    	final double maxZoomLatitudeSpan = mZoomLevel == getMaxZoomLevel() ?
-    			currentBox.getLatitudeSpanE6() :
-    			currentBox.getLatitudeSpanE6() / Math.pow(2, getMaxZoomLevel() - mZoomLevel);
+		final double maxZoomLatitudeSpan = mZoomLevel == getMaxZoomLevel() ?
+				currentBox.getLatitudeSpanE6() :
+					currentBox.getLatitudeSpanE6() / Math.pow(2, getMaxZoomLevel() - mZoomLevel);
 
-    	final double requiredLatitudeZoom =
-    		getMaxZoomLevel() -
-    		Math.ceil(Math.log(boundingBox.getLatitudeSpanE6() / maxZoomLatitudeSpan) / Math.log(2));
-
-
-		// Calculated required zoom based on longitude span
-    	final double maxZoomLongitudeSpan = mZoomLevel == getMaxZoomLevel() ?
-    			currentBox.getLongitudeSpanE6() :
-    			currentBox.getLongitudeSpanE6() / Math.pow(2, getMaxZoomLevel() - mZoomLevel);
-
-    	final double requiredLongitudeZoom =
-    		getMaxZoomLevel() -
-    		Math.ceil(Math.log(boundingBox.getLongitudeSpanE6() / maxZoomLongitudeSpan) / Math.log(2));
+				final double requiredLatitudeZoom =
+						getMaxZoomLevel() -
+						Math.ceil(Math.log(boundingBox.getLatitudeSpanE6() / maxZoomLatitudeSpan) / Math.log(2));
 
 
-    	// Zoom to boundingBox center, at calculated maximum allowed zoom level
-    	getController().setZoom((int)(
-    			requiredLatitudeZoom < requiredLongitudeZoom ?
-    			requiredLatitudeZoom : requiredLongitudeZoom));
+				// Calculated required zoom based on longitude span
+				final double maxZoomLongitudeSpan = mZoomLevel == getMaxZoomLevel() ?
+						currentBox.getLongitudeSpanE6() :
+							currentBox.getLongitudeSpanE6() / Math.pow(2, getMaxZoomLevel() - mZoomLevel);
 
-    	getController().setCenter(
-    			new GeoPoint(
-    					boundingBox.getCenter().getLatitudeE6()/1000000.0,
-    					boundingBox.getCenter().getLongitudeE6()/1000000.0
-    					));
+						final double requiredLongitudeZoom =
+								getMaxZoomLevel() -
+								Math.ceil(Math.log(boundingBox.getLongitudeSpanE6() / maxZoomLongitudeSpan) / Math.log(2));
+
+
+						// Zoom to boundingBox center, at calculated maximum allowed zoom level
+						getController().setZoom((int)(
+								requiredLatitudeZoom < requiredLongitudeZoom ?
+										requiredLatitudeZoom : requiredLongitudeZoom));
+
+						getController().setCenter(
+								new GeoPoint(
+										boundingBox.getCenter().getLatitudeE6()/1000000.0,
+										boundingBox.getCenter().getLongitudeE6()/1000000.0
+										));
 	}
 
 	/**
@@ -611,9 +619,9 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 	public void setBoundingBox(BoundingBoxE6 boundingBox) {
 		this.boundingBox = boundingBox;
 		this.invalidate();
-		
+
 	}
-	
+
 	/**
 	 * change the zoom Level of the mapview to the maximum zoom level containing all the GeoPoints in the ArrayList passed
 	 * @param points
@@ -622,9 +630,9 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 	public void setBoundingBox(ArrayList<GeoPoint> points) {
 		this.boundingBox = BoundingBoxE6.fromGeoPoints(points);
 		this.invalidate();
-		
+
 	}
-	
+
 	public boolean canZoomIn() {
 		final int maxZoomLevel = getMaxZoomLevel();
 		if (mZoomLevel >= maxZoomLevel) {
@@ -980,9 +988,9 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 			}
 		}
 		if (this.boundingBox != null) {
-	        this.zoomToBoundingBox(this.boundingBox);
-	        this.boundingBox = null;
-	    }
+			this.zoomToBoundingBox(this.boundingBox);
+			this.boundingBox = null;
+		}
 	}
 
 	public void onDetach() {
@@ -1518,16 +1526,16 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		public Point toMapPixels(final IGeoPoint in, final Point reuse) {
 			final Point out = reuse != null ? reuse : new Point();
 			TileSystem.LatLongToPixelXY(
-							in.getLatitudeE6() / 1E6,
-							in.getLongitudeE6() / 1E6,
-							getZoomLevel(), out);
+					in.getLatitudeE6() / 1E6,
+					in.getLongitudeE6() / 1E6,
+					getZoomLevel(), out);
 			out.offset(offsetX, offsetY);
 			if (Math.abs(out.x - getScrollX()) >
-				Math.abs(out.x - TileSystem.MapSize(getZoomLevel()) - getScrollX())) {
+			Math.abs(out.x - TileSystem.MapSize(getZoomLevel()) - getScrollX())) {
 				out.x -= TileSystem.MapSize(getZoomLevel());
 			}
 			if (Math.abs(out.y - getScrollY()) >
-				Math.abs(out.y - TileSystem.MapSize(getZoomLevel()) - getScrollY())) {
+			Math.abs(out.y - TileSystem.MapSize(getZoomLevel()) - getScrollY())) {
 				out.y -= TileSystem.MapSize(getZoomLevel());
 			}
 			return out;
@@ -1550,7 +1558,7 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 			final Point out = reuse != null ? reuse : new Point();
 
 			TileSystem
-					.LatLongToPixelXY(latituteE6 / 1E6, longitudeE6 / 1E6, MAXIMUM_ZOOMLEVEL, out);
+			.LatLongToPixelXY(latituteE6 / 1E6, longitudeE6 / 1E6, MAXIMUM_ZOOMLEVEL, out);
 			return out;
 		}
 
@@ -1692,13 +1700,16 @@ public class MapView extends ViewGroup implements IMapView, MapViewConstants,
 		@Override
 		public boolean onScroll(final MotionEvent e1, final MotionEvent e2, final float distanceX,
 				final float distanceY) {
-			if (MapView.this.getOverlayManager().onScroll(e1, e2, distanceX, distanceY,
-					MapView.this)) {
+			if(scrollable){
+				if (MapView.this.getOverlayManager().onScroll(e1, e2, distanceX, distanceY,
+						MapView.this)) {
+					return true;
+				}
+
+				scrollBy((int) distanceX, (int) distanceY);
 				return true;
 			}
-
-			scrollBy((int) distanceX, (int) distanceY);
-			return true;
+			return false;
 		}
 
 		@Override

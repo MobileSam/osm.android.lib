@@ -42,13 +42,13 @@ public class Geocoding {
 			super();
 			DEBUG_MODE = debug;
 			this.mContext = mContext;
-			dialog = new ProgressDialog(mContext);
+			//dialog = new ProgressDialog(mContext);
 		}
 		@Override
 		protected void onPreExecute() {
 			// TODO visualizzare il progress dialog
-			dialog.setMessage("Loading...");
-			dialog.show();
+			//dialog.setMessage("Loading...");
+			//dialog.show();
 		}
 		@Override
 		protected List<Address> doInBackground(GeoPoint... params) {
@@ -196,7 +196,7 @@ public class Geocoding {
 	 * List of Address
 	 */
 	public static List<Address> FromPointToAddress(GeoPoint mPoint, Context mContext){
-		Geocoding.FromPointToAddress getAddress = new Geocoding.FromPointToAddress(mContext, false);
+		Geocoding.FromPointToAddress getAddress = new Geocoding.FromPointToAddress(mContext, true);
 		getAddress.execute(mPoint);
 		List<Address> result = null;
 		try {
@@ -208,6 +208,7 @@ public class Geocoding {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		Log.d("indirizzo", "returned");
 		return result;
 	}
 }

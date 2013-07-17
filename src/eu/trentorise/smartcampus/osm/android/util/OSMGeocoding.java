@@ -25,7 +25,7 @@ import android.widget.Toast;
 public class OSMGeocoding {
 
 	private static class FromPointToAddress extends AsyncTask<GeoPoint,Integer,List<Address>> {
-		ProgressDialog dialog;
+		//ProgressDialog dialog;
 		Context mContext;
 		private boolean connectionError = false;
 		private boolean addressError = false;
@@ -42,13 +42,13 @@ public class OSMGeocoding {
 			super();
 			DEBUG_MODE = debug;
 			this.mContext = mContext;
-			dialog = new ProgressDialog(mContext);
+			//dialog = new ProgressDialog(mContext);
 		}
 		@Override
 		protected void onPreExecute() {
 			// TODO visualizzare il progress dialog
-			dialog.setMessage("Loading...");
-			dialog.show();
+			//dialog.setMessage("Loading...");
+			//dialog.show();
 		}
 		@Override
 		protected List<Address> doInBackground(GeoPoint... params) {
@@ -74,12 +74,12 @@ public class OSMGeocoding {
 		@Override
 		protected void onPostExecute(List<Address> result) {
 			// TODO togliere il progress dialog e, se andata bene, aggiornare la listView
-			try{
-				if(dialog.isShowing())
-					dialog.dismiss();
-			}catch(IllegalArgumentException e){
-				e.printStackTrace();
-			}
+//			try{
+//				if(dialog.isShowing())
+//					dialog.dismiss();
+//			}catch(IllegalArgumentException e){
+//				e.printStackTrace();
+//			}
 			if(DEBUG_MODE){
 				try{
 					for(Address mResult : result){
