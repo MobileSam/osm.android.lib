@@ -32,14 +32,13 @@ import eu.trentorise.smartcampus.osm.android.views.overlay.PathOverlay;
 public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverlay> {
 
 
-	ResourceProxy mProxy;
-	Context mContext;
-	ProgressDialog dialog;
-	Road road;
-	MapView mapView;
-	boolean stop = false;
-
-	boolean draw;
+	private ResourceProxy mProxy;
+	private Context mContext;
+	private ProgressDialog dialog;
+	private Road road;
+	private MapView mapView;
+	private static boolean stop = false;
+	private boolean draw;
 	ArrayList<GeoPoint> myList;
 	/**
 	 * @param mapViewO
