@@ -4,18 +4,22 @@ package eu.trentorise.smartcampus.osm.android.bonuspack.routing;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Locale;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
+import android.util.Log;
 import eu.trentorise.smartcampus.osm.android.bonuspack.utils.BonusPackHelper;
 import eu.trentorise.smartcampus.osm.android.bonuspack.utils.HttpConnection;
 import eu.trentorise.smartcampus.osm.android.bonuspack.utils.PolylineEncoder;
 import eu.trentorise.smartcampus.osm.android.util.BoundingBoxE6;
 import eu.trentorise.smartcampus.osm.android.util.GeoPoint;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
-import android.util.Log;
 
 /** class to get a route between a start and a destination point, 
  * going through a list of waypoints. 
@@ -28,7 +32,7 @@ import android.util.Log;
  */
 public class MapQuestRoadManager extends RoadManager {
 	
-	static final String MAPQUEST_GUIDANCE_SERVICE = "http://open.mapquestapi.com/guidance/v0/route?";
+	static final String MAPQUEST_GUIDANCE_SERVICE = "http://open.mapquestapi.com/guidance/v1/route?key=Fmjtd%7Cluub20uy2q%2Cbg%3Do5-9urlqa&";
 	
 	/**
 	 * Build the URL to MapQuest service returning a route in XML format
@@ -49,8 +53,8 @@ public class MapQuestRoadManager extends RoadManager {
 		urlString.append("&shapeFormat=cmp"); //encoded polyline, much faster
 		
 		urlString.append("&narrativeType=text"); //or "none"
-		//Locale locale = Locale.getDefault();
-		//urlString.append("&locale="+locale.getLanguage()+"_"+locale.getCountry());
+		Locale locale = Locale.getDefault();
+		urlString.append("&locale="+locale.getLanguage()+"_"+locale.getCountry());
 		
 		urlString.append("&unit=k&fishbone=false");
 		
@@ -276,6 +280,10 @@ class XMLHandler extends DefaultHandler {
 		} else if (localName.equals("boundingBox")){
 			mRoad.mBoundingBox = new BoundingBoxE6(mNorth, mEast, mSouth, mWest);
 			isBB = false;
+		}
+		else if(localName.equals("iconUrl")){
+			Log.w("iconUrl", "myIcon");
+			mNode.mIconUrl = mString;
 		}
 	}
 }

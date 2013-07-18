@@ -23,10 +23,13 @@ public class RoadNode implements Parcelable {
 	/** position of the node */
 	public GeoPoint mLocation;
 	
+	public String mIconUrl;
+	
 	public RoadNode(){
 		mManeuverType = 0;
 		mNextRoadLink = -1;
 		mLength = mDuration = 0.0;
+		mIconUrl = "none";
 	}
 	
 	//--- Parcelable implementation
@@ -41,6 +44,7 @@ public class RoadNode implements Parcelable {
 		out.writeDouble(mLength);
 		out.writeDouble(mDuration);
 		out.writeParcelable(mLocation, 0);
+		out.writeString(mIconUrl);
 	}
 	
 	public static final Parcelable.Creator<RoadNode> CREATOR = new Parcelable.Creator<RoadNode>() {
@@ -58,5 +62,6 @@ public class RoadNode implements Parcelable {
 		mLength = in.readDouble();
 		mDuration = in.readDouble();
 		mLocation = in.readParcelable(GeoPoint.class.getClassLoader());
+		mIconUrl = in.readString();
 	}
 }
