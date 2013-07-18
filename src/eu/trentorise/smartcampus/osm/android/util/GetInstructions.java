@@ -9,17 +9,19 @@ import eu.trentorise.smartcampus.osm.android.bonuspack.routing.MapQuestRoadManag
 import eu.trentorise.smartcampus.osm.android.bonuspack.routing.Road;
 import eu.trentorise.smartcampus.osm.android.bonuspack.routing.RoadNode;
 /**
- * Class to get a route between a start and a destination point, going through a list of waypoints. It uses MapQuest open, public and free API, based on OpenStreetMap data. 
+ * Class to get the RoadNodes between a start and a destination point, going through a list of waypoints. It uses MapQuest open, public and free API, based on OpenStreetMap data. 
  * See http://open.mapquestapi.com/guidance <BR>
- * This class contains an AsyncTask that permits to get the route
- * You have to allocate a new AsyncTask like this: <BR>
- * RoutingTask myTask = new RoutingTask(Context, MapView, draw);<BR>
- * myTask.execute(ArrayList<GeoPoint>);<BR>
- * @return a PathOverlay
+ * This class contains an AsyncTask that permits to get the RoadNodes
  * @author Dylan Stenico
  */
 public class GetInstructions{
-
+	/**
+	 * @param waypoints
+	 * An ArrayList contains all the GeoPoint you want the route pass through
+	 * @param mContext
+	 * @return
+	 * ArrayList<RoadNodes> all the breakpoints
+	 */
 	public static ArrayList<RoadNode> get(ArrayList<GeoPoint> waypoints, Context mContext){
 
 		ArrayList<RoadNode> toReturn = null;
@@ -77,21 +79,5 @@ public class GetInstructions{
 			//if(dialog.isShowing())
 				//dialog.dismiss();
 		}
-	}
-	public static String fromKilometersToMeters(double kilometers){
-		String toReturn = "";
-		int km = (int) Math.floor(kilometers);
-		int m = (int) ((kilometers - km) * 1000);
-		if(km > 0) toReturn += km + "km ";
-		return toReturn + m + "m";
-	}
-	public static String fromSecondToString(int second){
-		String toReturn = "";
-		int sec = second % 60;
-		int min = ((second - sec) / 60) % 60;
-		int hour =  (int) Math.floor(second / 3600);
-		if(hour > 0) toReturn += hour +"h ";
-		if(min > 0)  toReturn += min +"m ";
-		return toReturn + sec + "s";
 	}
 }
