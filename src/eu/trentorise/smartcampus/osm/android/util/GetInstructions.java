@@ -1,6 +1,7 @@
 package eu.trentorise.smartcampus.osm.android.util;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import android.content.Context;
@@ -15,15 +16,23 @@ import eu.trentorise.smartcampus.osm.android.bonuspack.routing.RoadNode;
  * @author Dylan Stenico
  */
 public class GetInstructions{
+	private static Locale mLocale;
+	private static String mRoadType;
 	/**
 	 * @param waypoints
 	 * An ArrayList contains all the GeoPoint you want the route pass through
 	 * @param mContext
+	 * @param locale
+	 * for the language. e.g. IT_it
+	 * @param roadType
+	 * use the constans e.g. MapQuestRoadManager.PEDESTRI
 	 * @return
 	 * ArrayList<RoadNodes> all the breakpoints
 	 */
-	public static ArrayList<RoadNode> get(ArrayList<GeoPoint> waypoints, Context mContext){
-
+	public static ArrayList<RoadNode> get(ArrayList<GeoPoint> waypoints, Context mContext, Locale locale, String roadType){
+		
+		mLocale = locale;
+		mRoadType = roadType;
 		ArrayList<RoadNode> toReturn = null;
 		RoutingTask route = new RoutingTask(mContext);
 		route.execute(waypoints);
@@ -39,6 +48,11 @@ public class GetInstructions{
 		}
 		if(mRoad != null){
 			toReturn = new ArrayList<RoadNode>();
+			RoadNode tmp = new RoadNode();
+			tmp.mDuration = mRoad.mDuration;
+			tmp.mLength = mRoad.mLength;
+			tmp.mInstructions = "All itinerary";
+			toReturn.add(tmp);
 			for (int i=0; i<mRoad.mNodes.size(); i++){
 				toReturn.add(mRoad.mNodes.get(i));
 			}
@@ -64,13 +78,12 @@ public class GetInstructions{
 			//dialog.setMessage("Loading...");
 			//dialog.show();
 		}
-
+		
 		@Override
 		protected Road doInBackground(ArrayList<GeoPoint>... params) {
 
-			MapQuestRoadManager roadManager = new MapQuestRoadManager();
+			MapQuestRoadManager roadManager = new MapQuestRoadManager(mLocale, mRoadType);
 			road = roadManager.getRoad(params[0]);
-			roadManager.addRequestOption("routeType=pedestrian");
 			return road;
 		}
 

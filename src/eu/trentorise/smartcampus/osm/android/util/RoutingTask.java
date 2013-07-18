@@ -1,6 +1,7 @@
 package eu.trentorise.smartcampus.osm.android.util;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -39,19 +40,27 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 	private static boolean stop = false;
 	private boolean draw;
 	ArrayList<GeoPoint> myList;
+	private Locale mLocale;
+	private String mRoadType;
 	/**
 	 * @param mapViewO
 	 * a MapView object
 	 * @param draw
 	 * set as true only to draw the markers on the PathOverlay
+	 * @param locale
+	 * for the language. e.g. IT_it
+	 * @param roadType
+	 * use the constans e.g. MapQuestRoadManager.PEDESTRIAN 
 	 */
-	public RoutingTask(Context context, MapView mapView, boolean Drawmarker) {
+	public RoutingTask(Context context, MapView mapView, boolean Drawmarker, Locale locale, String roadType) {
 		super();
 		mContext = context;
 		dialog = new ProgressDialog(mContext);
 		this.mapView = mapView;
 		this.draw = Drawmarker;
 		mProxy = mapView.getResourceProxy();
+		mLocale = locale;
+		mRoadType = roadType;
 	}
 
 	@Override
@@ -66,9 +75,8 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 
 		myList = new ArrayList<GeoPoint>(params[0]);
 
-		RoadManager roadManager = new MapQuestRoadManager();
+		RoadManager roadManager = new MapQuestRoadManager(mLocale, mRoadType);
 		road = roadManager.getRoad(params[0]);
-		roadManager.addRequestOption("routeType=pedestrian");
 		return RoadManager.buildRoadOverlay(road, mapView.getContext());
 	}
 
@@ -103,7 +111,7 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,PathOverl
 		}
 		else{
 			if(!stop){
-				RoutingTask route = new RoutingTask(mContext, mapView, draw);
+				RoutingTask route = new RoutingTask(mContext, mapView, draw, mLocale, mRoadType);
 				route.execute(myList);
 				stop = true;
 			}

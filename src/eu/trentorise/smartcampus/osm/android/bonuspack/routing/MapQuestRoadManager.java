@@ -31,9 +31,39 @@ import eu.trentorise.smartcampus.osm.android.util.GeoPoint;
  * @author M.Kergall
  */
 public class MapQuestRoadManager extends RoadManager {
-	
+	private String mLocale;
+	private String mRoadType;
 	static final String MAPQUEST_GUIDANCE_SERVICE = "http://open.mapquestapi.com/guidance/v1/route?key=Fmjtd%7Cluub20uy2q%2Cbg%3Do5-9urlqa&";
-	
+	/**
+	 * fastest - Quickest drive time route.
+	 */
+	public static final String FASTEST="&routeType=fastest";
+	/**
+	 * shortest - Shortest driving distance route.
+	 */
+	public static final String SHORTEST ="&routeType=shortest";
+	/**
+	 * pedestrian - Walking route; Avoids limited access roads; Ignores turn restrictions.
+	 */
+	public static final String PEDESTRIAN ="&routeType=pedestrian";
+	/**
+	 * multimodal - Combination of walking and (if available) Public Transit.
+	 */
+	public static final String MULTIMODAL = "&routeType=multimodal";
+	/**
+	 * bicycle - Bike route; Avoids limited access roads; Avoids roads where bicycle access is false; Favors bike specific paths and lower maxspeed roads.
+	 */
+	public static final String BYCICLE ="&routeType=bicycle";
+
+	/**
+	 * @param locale
+	 * for the Instructions' language
+	 */
+	public MapQuestRoadManager(Locale locale, String roadType){
+		mLocale = "&locale="+locale.getLanguage()+"_"+locale.getCountry();
+		mRoadType = roadType;
+	}
+
 	/**
 	 * Build the URL to MapQuest service returning a route in XML format
 	 * @param waypoints: array of waypoints, as [lat, lng], from start point to end point. 
@@ -43,24 +73,25 @@ public class MapQuestRoadManager extends RoadManager {
 		urlString.append("from=");
 		GeoPoint p = waypoints.get(0);
 		urlString.append(geoPointAsString(p));
-		
+
 		for (int i=1; i<waypoints.size(); i++){
 			p = waypoints.get(i);
 			urlString.append("&to="+geoPointAsString(p));
 		}
-		
+
 		urlString.append("&outFormat=xml");
 		urlString.append("&shapeFormat=cmp"); //encoded polyline, much faster
-		
+
 		urlString.append("&narrativeType=text"); //or "none"
-		Locale locale = Locale.getDefault();
-		urlString.append("&locale="+locale.getLanguage()+"_"+locale.getCountry());
-		
+
+		urlString.append(mLocale); //add language
+
 		urlString.append("&unit=k&fishbone=false");
-		
+		urlString.append(mRoadType);
+
 		//urlString.append("&generalizeAfter=500" /*+&generalize=2"*/); 
-			//500 points max, 2 meters tolerance
-		
+		//500 points max, 2 meters tolerance
+
 		//Warning: MapQuest Open API doc is sometimes WRONG:
 		//- use unit, not units
 		//- use fishbone, not enableFishbone
@@ -69,7 +100,7 @@ public class MapQuestRoadManager extends RoadManager {
 		urlString.append(mOptions);
 		return urlString.toString();
 	}
-	
+
 	/**
 	 * @param waypoints: list of GeoPoints. Must have at least 2 entries, start and end points. 
 	 * @return the road
@@ -82,7 +113,7 @@ public class MapQuestRoadManager extends RoadManager {
 		connection.doGet(url);
 		InputStream stream = connection.getStream();
 		if (stream != null)
-				road = getRoadXML(stream, waypoints);
+			road = getRoadXML(stream, waypoints);
 		if (road == null || road.mRouteHigh.size()==0){
 			//Create default road:
 			road = new Road(waypoints);
@@ -118,7 +149,7 @@ public class MapQuestRoadManager extends RoadManager {
 		}
 		return road;
 	}
-	
+
 	protected ArrayList<RoadNode> finalizeNodes(ArrayList<RoadNode> mNodes, 
 			ArrayList<RoadLink> mLinks, ArrayList<GeoPoint> polyline){
 		int n = mNodes.size();
@@ -147,7 +178,7 @@ public class MapQuestRoadManager extends RoadManager {
 		//switch to the new array of nodes:
 		return newNodes;
 	}
-	
+
 	/**
 	 * Clean-up 2 useless portions of MapQuest road shape: before start node, and after end node. 
 	 * @return new road shape
@@ -159,7 +190,7 @@ public class MapQuestRoadManager extends RoadManager {
 		int shapeIndexStart = links.get(nodeStart.mNextRoadLink).mShapeIndex;
 		int shapeIndexEnd = links.get(nodeEnd.mNextRoadLink).mShapeIndex;
 		for (int i=shapeIndexStart; i<=shapeIndexEnd; i++){
-		    newShape.add(road.mRouteHigh.get(i));
+			newShape.add(road.mRouteHigh.get(i));
 		}
 		return newShape;
 	}
@@ -183,7 +214,7 @@ class RoadLink {
 class XMLHandler extends DefaultHandler {
 	public Road mRoad;
 	public ArrayList<RoadLink> mLinks;
-	
+
 	boolean isBB;
 	boolean isGuidanceNodeCollection;
 	private String mString;
@@ -191,7 +222,7 @@ class XMLHandler extends DefaultHandler {
 	double mNorth, mWest, mSouth, mEast;
 	RoadLink mLink;
 	RoadNode mNode;
-	
+
 	public XMLHandler() {
 		isBB = isGuidanceNodeCollection = false;
 		mRoad = new Road();
@@ -216,12 +247,12 @@ class XMLHandler extends DefaultHandler {
 	 */
 	@Override public void characters(char[] ch, int start, int length)
 			throws SAXException {
-			String chars = new String(ch, start, length);
-			mString = mString.concat(chars);
+		String chars = new String(ch, start, length);
+		mString = mString.concat(chars);
 	}
-	
+
 	@Override public void endElement(String uri, String localName, String name)
-	throws SAXException {
+			throws SAXException {
 		if (localName.equals("lat")) {
 			mLat = Double.parseDouble(mString);
 		} else if (localName.equals("lng")) {
@@ -232,21 +263,21 @@ class XMLHandler extends DefaultHandler {
 		} else if (localName.equals("generalizedShape")) {
 			mRoad.setRouteLow(PolylineEncoder.decode(mString, 10));
 			//Log.d("DD", "Low="+mRoad.mRouteLow.size());
-	    } else if (localName.equals("length")) {
+		} else if (localName.equals("length")) {
 			mLink.mLength = Double.parseDouble(mString);
-	    } else if (localName.equals("speed")) {
+		} else if (localName.equals("speed")) {
 			mLink.mSpeed = Double.parseDouble(mString);
-	    } else if (localName.equals("shapeIndex")){
+		} else if (localName.equals("shapeIndex")){
 			mLink.mShapeIndex = Integer.parseInt(mString);
-	    } else if (localName.equals("link")) {
-            //End of a link: update road attributes:
-            //GuidanceLinkCollection could in theory contain additional unused links, 
-            //but normally not with fishbone set to false. 
-            mLink.mDuration = mLink.mLength / mLink.mSpeed * 3600.0;
-            mLinks.add(mLink);
-            mRoad.mLength += mLink.mLength;
-            mRoad.mDuration += mLink.mDuration;
-            mLink = null;
+		} else if (localName.equals("link")) {
+			//End of a link: update road attributes:
+			//GuidanceLinkCollection could in theory contain additional unused links, 
+			//but normally not with fishbone set to false. 
+			mLink.mDuration = mLink.mLength / mLink.mSpeed * 3600.0;
+			mLinks.add(mLink);
+			mRoad.mLength += mLink.mLength;
+			mRoad.mDuration += mLink.mDuration;
+			mLink = null;
 		} else if (localName.equals("turnCost")){
 			int turnCost = Integer.parseInt(mString);
 			mNode.mDuration += turnCost;

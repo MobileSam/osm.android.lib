@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -39,6 +40,7 @@ import eu.trentorise.smartcampus.osm.android.api.IMapView;
 import eu.trentorise.smartcampus.osm.android.api.IProjection;
 import eu.trentorise.smartcampus.osm.android.bonuspack.overlays.ExtendedOverlayItem;
 import eu.trentorise.smartcampus.osm.android.bonuspack.overlays.ItemizedOverlayWithBubble;
+import eu.trentorise.smartcampus.osm.android.bonuspack.routing.MapQuestRoadManager;
 import eu.trentorise.smartcampus.osm.android.events.MapListener;
 import eu.trentorise.smartcampus.osm.android.events.ScrollEvent;
 import eu.trentorise.smartcampus.osm.android.events.ZoomEvent;
@@ -332,9 +334,9 @@ MultiTouchObjectCanvas<Object> {
 	 * @param points
 	 * An ArrayList<GeoPoint> that represents the Points on which the path should pass
 	 */
-	public void drawPath(ArrayList<GeoPoint> points)
+	public void drawPath(ArrayList<GeoPoint> points, Locale mLocale, String roadType)
 	{
-		RoutingTask route = new RoutingTask(getContext(), this, true);
+		RoutingTask route = new RoutingTask(getContext(), this, true, mLocale, roadType);
 		route.execute(points);
 	}
 
