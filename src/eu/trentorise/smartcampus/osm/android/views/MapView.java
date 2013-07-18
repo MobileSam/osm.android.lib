@@ -334,10 +334,9 @@ MultiTouchObjectCanvas<Object> {
 	 * @param points
 	 * An ArrayList<GeoPoint> that represents the Points on which the path should pass
 	 */
-	public void drawPath(ArrayList<GeoPoint> points, Locale mLocale, String roadType)
+	public void drawPath(ArrayList<GeoPoint> points, Locale mLocale, String mRoadType)
 	{
-		RoutingTask route = new RoutingTask(getContext(), this, true, mLocale, roadType);
-		route.execute(points);
+		RoutingTask.drawPath(points, this, getContext(), mLocale, mRoadType);
 	}
 
 	/**
