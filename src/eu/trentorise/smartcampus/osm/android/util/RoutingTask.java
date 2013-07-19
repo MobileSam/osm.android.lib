@@ -76,14 +76,14 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,Road> {
 		}
 		if(mRoad != null){
 			toReturn = new ArrayList<RoadNode>();
-			RoadNode tmp = new RoadNode();
-			tmp.mDuration = mRoad.mDuration;
-			tmp.mLength = mRoad.mLength;
-			tmp.mInstructions = "All itinerary";
-			toReturn.add(tmp);
-			tmp.mIconUrl = ("http://www.gambassigena.it/img/components/misc/piedi.png");
-			tmp.mManeuverType = 99;
-			for (int i=0; i<mRoad.mNodes.size(); i++){
+//			RoadNode tmp = new RoadNode();
+//			tmp.mDuration = mRoad.mDuration;
+//			tmp.mLength = mRoad.mLength;
+//			tmp.mInstructions = "All itinerary";
+//			toReturn.add(tmp);
+//			tmp.mIconUrl = ("http://www.gambassigena.it/img/components/misc/piedi.png");
+//			tmp.mManeuverType = 99;
+			for (int i=0; i < mRoad.mNodes.size(); i++){
 				toReturn.add(mRoad.mNodes.get(i));
 			}
 		}
@@ -156,7 +156,7 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,Road> {
 					Log.d("time", Double.toString(node.mDuration));
 					Log.d("time", Integer.toString(i));  
 					ExtendedOverlayItem nodeMarker = new ExtendedOverlayItem(node.mInstructions, "Time: " +fromSecondToString((int)node.mDuration)+ "\nLenght: " + fromKilometersToMeters(node.mLength), node.mLocation);
-					nodeMarker.setMarkerHotspot(OverlayItem.HotspotPlace.BOTTOM_CENTER);
+					nodeMarker.setMarkerHotspot(OverlayItem.HotspotPlace.CENTER);
 					nodeMarker.setMarker(icon);
 					roadNodes.addItem(nodeMarker);
 				}
