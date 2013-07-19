@@ -81,11 +81,37 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,Road> {
 			tmp.mLength = mRoad.mLength;
 			tmp.mInstructions = "All itinerary";
 			toReturn.add(tmp);
+			tmp.mIconUrl = ("http://www.gambassigena.it/img/components/misc/piedi.png");
+			tmp.mManeuverType = 99;
 			for (int i=0; i<mRoad.mNodes.size(); i++){
 				toReturn.add(mRoad.mNodes.get(i));
 			}
 		}
 		return toReturn;
+	}
+	/**
+	 * get the road between two or more waypoints
+	 * @param waypoints
+	 * @param mContext
+	 * @param locale
+	 * @param roadType
+	 * @return
+	 */
+	public static Road getRoad(ArrayList<GeoPoint> waypoints, Context mContext, Locale locale, String roadType){
+		Road mRoad = null;
+
+		RoutingTask myTask = new RoutingTask(mContext, null, locale, roadType);
+		myTask.execute(waypoints);
+		try {
+			mRoad = myTask.get();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return mRoad;
 	}
 	/**
 	 * @param waypoints
@@ -117,7 +143,7 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,Road> {
 		}
 		if(mRoad != null){
 			PathOverlay myOverlay = RoadManager.buildRoadOverlay(mRoad, mapView.getContext());
-			if(myOverlay.getNumberOfPoints() > 2){
+			if(true){//myOverlay.getNumberOfPoints() > 2){
 				//draw path
 				mapView.getOverlays().add(myOverlay);
 				//add markers
@@ -198,7 +224,7 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,Road> {
 	@Override
 	protected Road doInBackground(ArrayList<GeoPoint>... params) {
 
-		RoadManager roadManager = new MapQuestRoadManager(mLocale, mRoadType);
+		RoadManager roadManager = new MapQuestRoadManager(mLocale, mRoadType, mContext);
 		road = roadManager.getRoad(params[0]);
 		return road;
 	}

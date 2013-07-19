@@ -49,6 +49,7 @@ public class Road  implements Parcelable {
 	/** STATUS_DEFAULT = any issue (technical issue, or no possible route) led to build a default road */
 	public static final int STATUS_DEFAULT=2;
 	
+	public boolean hasHighway;
 	private void init(){
 		mStatus = STATUS_INVALID;
 		mLength = 0.0;
@@ -58,6 +59,7 @@ public class Road  implements Parcelable {
 		mRouteLow = null;
 		mLegs = new ArrayList<RoadLeg>();
 		mBoundingBox = null;
+		hasHighway = false;
 	}
 	
 	public Road(){

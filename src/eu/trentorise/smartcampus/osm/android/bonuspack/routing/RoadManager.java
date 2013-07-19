@@ -7,6 +7,7 @@ import eu.trentorise.smartcampus.osm.android.views.overlay.PathOverlay;
 
 import android.content.Context;
 import android.graphics.Paint;
+import android.util.Log;
 
 /**
  * Generic class to get a route between a start and a destination point, 
@@ -18,15 +19,15 @@ import android.graphics.Paint;
  * @author M.Kergall
  */
 public abstract class RoadManager {
-	
+
 	protected String mOptions;
-	
+
 	public abstract Road getRoad(ArrayList<GeoPoint> waypoints);
-	
+
 	public RoadManager(){
 		mOptions = "";
 	}
-	
+
 	/**
 	 * Add an option that will be used in the route request. 
 	 * Note that some options are set in the request in all cases. 
@@ -36,7 +37,7 @@ public abstract class RoadManager {
 	public void addRequestOption(String requestOption){
 		mOptions += "&" + requestOption;
 	}
-	
+
 	/**
 	 * @return the GeoPoint as a string, properly formatted: lat,lon
 	 */
@@ -48,7 +49,7 @@ public abstract class RoadManager {
 		result.append("," + Double.toString(d));
 		return result.toString();
 	}
-	
+
 	/**
 	 * Using the road high definition shape, builds and returns a PathOverlay using the Paint. 
 	 * @param road
@@ -62,11 +63,13 @@ public abstract class RoadManager {
 			ArrayList<GeoPoint> polyline = road.mRouteHigh;
 			for (GeoPoint p:polyline){
 				roadOverlay.addPoint(p);
+				//Log.e("Point" + polyline.indexOf(p), p.toString());
 			}
+			//Log.e("drawed","path");
 		}
 		return roadOverlay;
 	}
-	
+
 	/**
 	 * Builds an overlay for the road shape with a default (and nice!) color. 
 	 * @return route shape overlay

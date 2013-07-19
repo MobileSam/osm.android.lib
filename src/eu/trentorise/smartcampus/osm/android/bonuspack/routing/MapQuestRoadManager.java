@@ -1,19 +1,15 @@
 package eu.trentorise.smartcampus.osm.android.bonuspack.routing;
 
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Locale;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import android.content.Context;
 import android.util.Log;
 import eu.trentorise.smartcampus.osm.android.bonuspack.utils.BonusPackHelper;
 import eu.trentorise.smartcampus.osm.android.bonuspack.utils.HttpConnection;
@@ -25,7 +21,7 @@ import eu.trentorise.smartcampus.osm.android.util.GeoPoint;
  * going through a list of waypoints. 
  * 
  * It uses MapQuest open, public and free API, based on OpenStreetMap data. <br>
- * See http://open.mapquestapi.com/guidance
+ * See http://open.mapquestapi.com/directions/
  * @return a "Road" object. 
  * 
  * @author M.Kergall
@@ -33,7 +29,8 @@ import eu.trentorise.smartcampus.osm.android.util.GeoPoint;
 public class MapQuestRoadManager extends RoadManager {
 	private String mLocale;
 	private String mRoadType;
-	static final String MAPQUEST_GUIDANCE_SERVICE = "http://open.mapquestapi.com/guidance/v1/route?key=Fmjtd%7Cluub20uy2q%2Cbg%3Do5-9urlqa&";
+	private Context mContext;
+	static final String MAPQUEST_GUIDANCE_SERVICE = "http://open.mapquestapi.com/directions/v1/route?key=Fmjtd%7Cluub20uy2q%2Cbg%3Do5-9urlqa";
 	/**
 	 * fastest - Quickest drive time route.
 	 */
@@ -59,9 +56,10 @@ public class MapQuestRoadManager extends RoadManager {
 	 * @param locale
 	 * for the Instructions' language
 	 */
-	public MapQuestRoadManager(Locale locale, String roadType){
+	public MapQuestRoadManager(Locale locale, String roadType, Context context){
 		mLocale = "&locale="+locale.getLanguage()+"_"+locale.getCountry();
 		mRoadType = roadType;
+		mContext = context;
 	}
 
 	/**
@@ -70,7 +68,17 @@ public class MapQuestRoadManager extends RoadManager {
 	 */
 	protected String getUrl(ArrayList<GeoPoint> waypoints) {
 		StringBuffer urlString = new StringBuffer(MAPQUEST_GUIDANCE_SERVICE);
-		urlString.append("from=");
+		urlString.append("&callback=renderAdvancedNarrative");
+		urlString.append("&outFormat=xml");
+		urlString.append(mRoadType);
+		urlString.append("&timeType=1");
+		urlString.append("&enhancedNarrative=false"); //or "none"
+		urlString.append("&shapeFormat=cmp"); //encoded polyline, much faster
+		urlString.append("&generalize=0");
+		urlString.append(mLocale); //add language
+		urlString.append("&unit=k");
+		
+		urlString.append("&from=");
 		GeoPoint p = waypoints.get(0);
 		urlString.append(geoPointAsString(p));
 
@@ -78,17 +86,6 @@ public class MapQuestRoadManager extends RoadManager {
 			p = waypoints.get(i);
 			urlString.append("&to="+geoPointAsString(p));
 		}
-
-		urlString.append("&outFormat=xml");
-		urlString.append("&shapeFormat=cmp"); //encoded polyline, much faster
-
-		urlString.append("&narrativeType=text"); //or "none"
-
-		urlString.append(mLocale); //add language
-
-		urlString.append("&unit=k&fishbone=false");
-		urlString.append(mRoadType);
-
 		//urlString.append("&generalizeAfter=500" /*+&generalize=2"*/); 
 		//500 points max, 2 meters tolerance
 
@@ -97,7 +94,6 @@ public class MapQuestRoadManager extends RoadManager {
 		//- use fishbone, not enableFishbone
 		//- locale (fr_FR, en_US) is supported but not documented. 
 		//- generalize and generalizeAfter are not properly implemented
-		urlString.append(mOptions);
 		return urlString.toString();
 	}
 
@@ -120,6 +116,8 @@ public class MapQuestRoadManager extends RoadManager {
 		}
 		connection.close();
 		Log.d(BonusPackHelper.LOG_TAG, "MapQuestRoadManager.getRoute - finished");
+//		Log.w("sixze", Integer.toString(road.mNodes.size()));
+//		Log.w("sixze", (road.mNodes.get(4).mInstructions));
 		return road;
 	}
 
@@ -129,24 +127,27 @@ public class MapQuestRoadManager extends RoadManager {
 	 * @return the road
 	 */
 	protected Road getRoadXML(InputStream is, ArrayList<GeoPoint> waypoints) {
-		XMLHandler handler = new XMLHandler();
-		try {
-			SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
-			parser.parse(is, handler);
-		} catch (ParserConfigurationException e) {
-			e.printStackTrace();
-		} catch (SAXException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		Road road = handler.mRoad;
-		if (road != null && road.mRouteHigh.size()>0){
-			road.mNodes = finalizeNodes(road.mNodes, handler.mLinks, road.mRouteHigh);
-			road.mRouteHigh = finalizeRoadShape(road, handler.mLinks);
-			road.buildLegs(waypoints);
-			road.mStatus = Road.STATUS_OK;
-		}
+//		XMLHandler handler = new XMLHandler();
+//		try {
+//			SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
+//			parser.parse(is, handler);
+//		} catch (ParserConfigurationException e) {
+//			e.printStackTrace();
+//		} catch (SAXException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		Road road = handler.mRoad;
+//		if (road != null && road.mRouteHigh.size()>0){
+//			road.mNodes = finalizeNodes(road.mNodes, handler.mLinks, road.mRouteHigh);
+//			road.mRouteHigh = finalizeRoadShape(road, handler.mLinks);
+//			road.buildLegs(waypoints);
+//			road.mStatus = Road.STATUS_OK;
+//		}
+//		return road;
+		XMLParser handler = new XMLParser(mContext,is);
+		Road road = handler.getRoad();
 		return road;
 	}
 
@@ -311,10 +312,6 @@ class XMLHandler extends DefaultHandler {
 		} else if (localName.equals("boundingBox")){
 			mRoad.mBoundingBox = new BoundingBoxE6(mNorth, mEast, mSouth, mWest);
 			isBB = false;
-		}
-		else if(localName.equals("iconUrl")){
-			Log.w("iconUrl", "myIcon");
-			mNode.mIconUrl = mString;
 		}
 	}
 }
