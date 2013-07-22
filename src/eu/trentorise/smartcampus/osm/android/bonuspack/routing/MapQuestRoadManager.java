@@ -1,9 +1,14 @@
 package eu.trentorise.smartcampus.osm.android.bonuspack.routing;
 
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Locale;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -30,7 +35,9 @@ public class MapQuestRoadManager extends RoadManager {
 	private String mLocale;
 	private String mRoadType;
 	private Context mContext;
-	static final String MAPQUEST_GUIDANCE_SERVICE = "http://open.mapquestapi.com/directions/v1/route?key=Fmjtd%7Cluub20uy2q%2Cbg%3Do5-9urlqa";
+	static final String MAPQUEST_GUIDANCE_SERVICE_V1 = "http://open.mapquestapi.com/directions/v1/route?key=Fmjtd%7Cluub20uy2q%2Cbg%3Do5-9urlqa";
+
+	static final String MAPQUEST_GUIDANCE_SERVICE_V0 = "http://open.mapquestapi.com/guidance/v0/route?";
 	/**
 	 * fastest - Quickest drive time route.
 	 */
@@ -52,14 +59,24 @@ public class MapQuestRoadManager extends RoadManager {
 	 */
 	public static final String BYCICLE ="&routeType=bicycle";
 
+
+	boolean apiv1;
+
 	/**
+	 * 
 	 * @param locale
 	 * for the Instructions' language
+	 * @param roadType
+	 * the type of the road (e.g. PEDESTRIAN, FASTEST, SHORTEST)
+	 * @param context
+	 * @param apiv1
+	 * true if you want to use mapquest's api v1, false for api v0
 	 */
-	public MapQuestRoadManager(Locale locale, String roadType, Context context){
+	public MapQuestRoadManager(Locale locale, String roadType, Context context, boolean apiv1){
 		mLocale = "&locale="+locale.getLanguage()+"_"+locale.getCountry();
 		mRoadType = roadType;
 		mContext = context;
+		this.apiv1  = apiv1;
 	}
 
 	/**
@@ -67,7 +84,12 @@ public class MapQuestRoadManager extends RoadManager {
 	 * @param waypoints: array of waypoints, as [lat, lng], from start point to end point. 
 	 */
 	protected String getUrl(ArrayList<GeoPoint> waypoints) {
-		StringBuffer urlString = new StringBuffer(MAPQUEST_GUIDANCE_SERVICE);
+		StringBuffer urlString;
+		if(apiv1){
+			urlString = new StringBuffer(MAPQUEST_GUIDANCE_SERVICE_V1);
+		}else{
+			urlString = new StringBuffer(MAPQUEST_GUIDANCE_SERVICE_V0);
+		}
 		urlString.append("&callback=renderAdvancedNarrative");
 		urlString.append("&outFormat=xml");
 		urlString.append(mRoadType);
@@ -77,7 +99,7 @@ public class MapQuestRoadManager extends RoadManager {
 		urlString.append("&generalize=0");
 		urlString.append(mLocale); //add language
 		urlString.append("&unit=k");
-		
+
 		urlString.append("&from=");
 		GeoPoint p = waypoints.get(0);
 		urlString.append(geoPointAsString(p));
@@ -116,8 +138,8 @@ public class MapQuestRoadManager extends RoadManager {
 		}
 		connection.close();
 		Log.d(BonusPackHelper.LOG_TAG, "MapQuestRoadManager.getRoute - finished");
-//		Log.w("sixze", Integer.toString(road.mNodes.size()));
-//		Log.w("sixze", (road.mNodes.get(4).mInstructions));
+		//		Log.w("sixze", Integer.toString(road.mNodes.size()));
+		//		Log.w("sixze", (road.mNodes.get(4).mInstructions));
 		return road;
 	}
 
@@ -127,28 +149,32 @@ public class MapQuestRoadManager extends RoadManager {
 	 * @return the road
 	 */
 	protected Road getRoadXML(InputStream is, ArrayList<GeoPoint> waypoints) {
-//		XMLHandler handler = new XMLHandler();
-//		try {
-//			SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
-//			parser.parse(is, handler);
-//		} catch (ParserConfigurationException e) {
-//			e.printStackTrace();
-//		} catch (SAXException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		Road road = handler.mRoad;
-//		if (road != null && road.mRouteHigh.size()>0){
-//			road.mNodes = finalizeNodes(road.mNodes, handler.mLinks, road.mRouteHigh);
-//			road.mRouteHigh = finalizeRoadShape(road, handler.mLinks);
-//			road.buildLegs(waypoints);
-//			road.mStatus = Road.STATUS_OK;
-//		}
-//		return road;
-		XMLParser handler = new XMLParser(mContext,is);
-		Road road = handler.getRoad();
-		return road;
+		if(apiv1){
+			XMLHandler handler = new XMLHandler();
+			try {
+				SAXParser parser = SAXParserFactory.newInstance().newSAXParser();
+				parser.parse(is, handler);
+			} catch (ParserConfigurationException e) {
+				e.printStackTrace();
+			} catch (SAXException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			Road road = handler.mRoad;
+			if (road != null && road.mRouteHigh.size()>0){
+				road.mNodes = finalizeNodes(road.mNodes, handler.mLinks, road.mRouteHigh);
+				road.mRouteHigh = finalizeRoadShape(road, handler.mLinks);
+				road.buildLegs(waypoints);
+				road.mStatus = Road.STATUS_OK;
+			}
+			return road;
+		}else {
+			XMLParser handler = new XMLParser(mContext,is);
+			Road road = handler.getRoad();
+			return road;
+
+		}
 	}
 
 	protected ArrayList<RoadNode> finalizeNodes(ArrayList<RoadNode> mNodes, 

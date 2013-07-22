@@ -35,8 +35,9 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,Road> {
 	ArrayList<GeoPoint> myPoints;
 	private Locale mLocale;
 	private String mRoadType;
-
-	private RoutingTask(Context context, MapView mapView, Locale locale, String roadType) {
+	private boolean apiv1;
+	
+	private RoutingTask(Context context, MapView mapView, Locale locale, String roadType,boolean apiv1) {
 		super();
 		this.mContext = context;
 		//dialog = new ProgressDialog(mContext);
@@ -44,6 +45,7 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,Road> {
 			ResourceProxy mProxy = mapView.getResourceProxy();
 			icon = mProxy.getDrawable(bitmap.marker_node);
 		}
+		this.apiv1 = apiv1;
 		this.mLocale = locale;
 		this.mRoadType = roadType;
 	}
@@ -59,11 +61,11 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,Road> {
 	 * @return
 	 * arrayList of RoadNode
 	 */
-	public static ArrayList<RoadNode> getRoadNodes(ArrayList<GeoPoint> waypoints, Context mContext, Locale locale, String roadType){
+	public static ArrayList<RoadNode> getRoadNodes(ArrayList<GeoPoint> waypoints, Context mContext, Locale locale, String roadType,boolean apiv1){
 		ArrayList<RoadNode> toReturn = null;
 		Road mRoad = null;
 
-		RoutingTask myTask = new RoutingTask(mContext, null, locale, roadType);
+		RoutingTask myTask = new RoutingTask(mContext, null, locale, roadType, apiv1);
 		myTask.execute(waypoints);
 		try {
 			mRoad = myTask.get();
@@ -97,10 +99,10 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,Road> {
 	 * @param roadType
 	 * @return
 	 */
-	public static Road getRoad(ArrayList<GeoPoint> waypoints, Context mContext, Locale locale, String roadType){
+	public static Road getRoad(ArrayList<GeoPoint> waypoints, Context mContext, Locale locale, String roadType,boolean apiv1){
 		Road mRoad = null;
 
-		RoutingTask myTask = new RoutingTask(mContext, null, locale, roadType);
+		RoutingTask myTask = new RoutingTask(mContext, null, locale, roadType,apiv1);
 		myTask.execute(waypoints);
 		try {
 			mRoad = myTask.get();
@@ -125,11 +127,11 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,Road> {
 	 * @return
 	 * true if it works, else false
 	 */
-	public static boolean drawPath(ArrayList<GeoPoint> waypoints, MapView mapView, Context mContext, Locale locale, String roadType){
+	public static boolean drawPath(ArrayList<GeoPoint> waypoints, MapView mapView, Context mContext, Locale locale, String roadType,boolean apiv1){
 
 		Road mRoad = null;
 
-		RoutingTask myTask = new RoutingTask(mContext, mapView, locale, roadType);
+		RoutingTask myTask = new RoutingTask(mContext, mapView, locale, roadType, apiv1);
 		myTask.execute(waypoints);
 
 		try {
@@ -183,11 +185,11 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,Road> {
 	 * @return
 	 * true if it works, else null
 	 */
-	public static boolean drawPathWithoutMarkers(ArrayList<GeoPoint> waypoints, MapView mapView, Context mContext, Locale locale, String roadType){
+	public static boolean drawPathWithoutMarkers(ArrayList<GeoPoint> waypoints, MapView mapView, Context mContext, Locale locale, String roadType,boolean apiv1){
 
 		Road mRoad = null;
 
-		RoutingTask myTask = new RoutingTask(mContext, mapView, locale, roadType);
+		RoutingTask myTask = new RoutingTask(mContext, mapView, locale, roadType,apiv1);
 		myTask.execute(waypoints);
 
 		try {
@@ -224,7 +226,7 @@ public class RoutingTask extends AsyncTask<ArrayList<GeoPoint>,Integer,Road> {
 	@Override
 	protected Road doInBackground(ArrayList<GeoPoint>... params) {
 
-		RoadManager roadManager = new MapQuestRoadManager(mLocale, mRoadType, mContext);
+		RoadManager roadManager = new MapQuestRoadManager(mLocale, mRoadType, mContext,true);
 		road = roadManager.getRoad(params[0]);
 		return road;
 	}

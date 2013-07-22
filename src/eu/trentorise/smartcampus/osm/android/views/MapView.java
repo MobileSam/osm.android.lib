@@ -333,10 +333,16 @@ MultiTouchObjectCanvas<Object> {
 	 * Build a {@link PathOverlay} by calling {@link RoutingTask} and draws it on the mapView
 	 * @param points
 	 * An ArrayList<GeoPoint> that represents the Points on which the path should pass
+	 * @param mLocale
+	 * the language of the instructions
+	 * @param mRoadType
+	 * the type of the road (e.g. PEDESTRIAN, FASTEST, SHORTEST)
+	 * @param apiv1
+	 * true if you want to use mapquest's api v1, false for api v0
 	 */
-	public void drawPath(ArrayList<GeoPoint> points, Locale mLocale, String mRoadType)
+	public void drawPath(ArrayList<GeoPoint> points, Locale mLocale, String mRoadType,boolean apiv1)
 	{
-		RoutingTask.drawPath(points, this, getContext(), mLocale, mRoadType);
+		RoutingTask.drawPath(points, this, getContext(), mLocale, mRoadType,apiv1);
 	}
 
 	/**
