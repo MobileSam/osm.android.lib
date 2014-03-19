@@ -10,6 +10,7 @@ import eu.trentorise.smartcampus.osm.android.views.safecanvas.ISafeCanvas;
 import eu.trentorise.smartcampus.osm.android.views.safecanvas.SafePaint;
 import eu.trentorise.smartcampus.osm.android.views.safecanvas.SafeTranslatedPath;
 import eu.trentorise.smartcampus.osm.android.views.safecanvas.ISafeCanvas.UnsafeCanvasHandler;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -36,7 +37,7 @@ import android.util.Log;
  * 
  * @author M.Kergall
  */
-public class ItemizedOverlayWithBubble<Item extends OverlayItem> extends ItemizedIconOverlay<Item> {
+public class ItemizedOverlayWithBubble <Item extends OverlayItem> extends ItemizedIconOverlay<Item> {
 	//protected List<Item> mItemsList;
 	protected InfoWindow mBubble; //only one for all items of this overlay => one at a time
 	protected OverlayItem mItemWithBubble; //the item currently showing the bubble. Null if none. 

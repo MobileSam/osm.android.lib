@@ -1,6 +1,5 @@
 package eu.trentorise.smartcampus.osm.android.views;
 
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ import eu.trentorise.smartcampus.osm.android.api.IMapView;
 import eu.trentorise.smartcampus.osm.android.api.IProjection;
 import eu.trentorise.smartcampus.osm.android.bonuspack.overlays.ExtendedOverlayItem;
 import eu.trentorise.smartcampus.osm.android.bonuspack.overlays.ItemizedOverlayWithBubble;
-import eu.trentorise.smartcampus.osm.android.bonuspack.routing.MapQuestRoadManager;
 import eu.trentorise.smartcampus.osm.android.events.MapListener;
 import eu.trentorise.smartcampus.osm.android.events.ScrollEvent;
 import eu.trentorise.smartcampus.osm.android.events.ZoomEvent;
@@ -74,16 +72,18 @@ import eu.trentorise.smartcampus.osm.android.views.safecanvas.ISafeCanvas;
 import eu.trentorise.smartcampus.osm.android.views.util.constants.MapViewConstants;
 
 public class MapView extends ViewGroup implements IMapView, MapViewConstants,
-MultiTouchObjectCanvas<Object> {
+		MultiTouchObjectCanvas<Object> {
 
 	// ===========================================================
 	// Constants
 	// ===========================================================
 
-	private static final Logger logger = LoggerFactory.getLogger(MapView.class);
+	// private static final Logger logger =
+	// LoggerFactory.getLogger(MapView.class);
 
 	private static final double ZOOM_SENSITIVITY = 1.0;
-	private static final double ZOOM_LOG_BASE_INV = 1.0 / Math.log(2.0 / ZOOM_SENSITIVITY);
+	private static final double ZOOM_LOG_BASE_INV = 1.0 / Math
+			.log(2.0 / ZOOM_SENSITIVITY);
 	private static Method sMotionEventTransformMethod;
 
 	// ===========================================================
@@ -142,7 +142,7 @@ MultiTouchObjectCanvas<Object> {
 
 	/* a point that will be reused to design added views */
 	private final Point mPoint = new Point();
-	private BoundingBoxE6 boundingBox= null;
+	private BoundingBoxE6 boundingBox = null;
 
 	protected ItemizedOverlayWithBubble<ExtendedOverlayItem> markersAdded;
 
@@ -151,7 +151,8 @@ MultiTouchObjectCanvas<Object> {
 	// ===========================================================
 
 	protected MapView(final Context context, final int tileSizePixels,
-			final ResourceProxy resourceProxy, MapTileProviderBase tileProvider,
+			final ResourceProxy resourceProxy,
+			MapTileProviderBase tileProvider,
 			final Handler tileRequestCompleteHandler, final AttributeSet attrs) {
 		super(context, attrs);
 		mResourceProxy = resourceProxy;
@@ -166,32 +167,38 @@ MultiTouchObjectCanvas<Object> {
 
 		mTileRequestCompleteHandler = tileRequestCompleteHandler == null ? new SimpleInvalidationHandler(
 				this) : tileRequestCompleteHandler;
-				mTileProvider = tileProvider;
-				mTileProvider.setTileRequestCompleteHandler(mTileRequestCompleteHandler);
+		mTileProvider = tileProvider;
+		mTileProvider
+				.setTileRequestCompleteHandler(mTileRequestCompleteHandler);
 
-				this.mMapOverlay = new TilesOverlay(mTileProvider, mResourceProxy);
-				mOverlayManager = new OverlayManager(mMapOverlay);
+		this.mMapOverlay = new TilesOverlay(mTileProvider, mResourceProxy);
+		mOverlayManager = new OverlayManager(mMapOverlay);
 
-				this.mZoomController = new ZoomButtonsController(this);
-				this.mZoomController.setOnZoomListener(new MapViewZoomListener());
+		this.mZoomController = new ZoomButtonsController(this);
+		this.mZoomController.setOnZoomListener(new MapViewZoomListener());
 
-				mZoomInAnimation = new ScaleAnimation(1, 2, 1, 2, Animation.RELATIVE_TO_SELF, 0.5f,
-						Animation.RELATIVE_TO_SELF, 0.5f);
-				mZoomOutAnimation = new ScaleAnimation(1, 0.5f, 1, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f,
-						Animation.RELATIVE_TO_SELF, 0.5f);
-				mZoomInAnimation.setDuration(ANIMATION_DURATION_SHORT);
-				mZoomOutAnimation.setDuration(ANIMATION_DURATION_SHORT);
+		mZoomInAnimation = new ScaleAnimation(1, 2, 1, 2,
+				Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+				0.5f);
+		mZoomOutAnimation = new ScaleAnimation(1, 0.5f, 1, 0.5f,
+				Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF,
+				0.5f);
+		mZoomInAnimation.setDuration(ANIMATION_DURATION_SHORT);
+		mZoomOutAnimation.setDuration(ANIMATION_DURATION_SHORT);
 
-				mGestureDetector = new GestureDetector(context, new MapViewGestureDetectorListener());
-				mGestureDetector.setOnDoubleTapListener(new MapViewDoubleClickListener());
-				this.setTileSource(TileSourceFactory.MAPNIK);
+		mGestureDetector = new GestureDetector(context,
+				new MapViewGestureDetectorListener());
+		mGestureDetector
+				.setOnDoubleTapListener(new MapViewDoubleClickListener());
+		this.setTileSource(TileSourceFactory.MAPNIK);
 	}
 
 	/**
 	 * Constructor used by XML layout resource (uses default tile source).
 	 */
 	public MapView(final Context context, final AttributeSet attrs) {
-		this(context, 256, new DefaultResourceProxyImpl(context), null, null, attrs);
+		this(context, 256, new DefaultResourceProxyImpl(context), null, null,
+				attrs);
 	}
 
 	/**
@@ -207,15 +214,17 @@ MultiTouchObjectCanvas<Object> {
 	}
 
 	public MapView(final Context context, final int tileSizePixels,
-			final ResourceProxy resourceProxy, final MapTileProviderBase aTileProvider) {
+			final ResourceProxy resourceProxy,
+			final MapTileProviderBase aTileProvider) {
 		this(context, tileSizePixels, resourceProxy, aTileProvider, null);
 	}
 
 	public MapView(final Context context, final int tileSizePixels,
-			final ResourceProxy resourceProxy, final MapTileProviderBase aTileProvider,
+			final ResourceProxy resourceProxy,
+			final MapTileProviderBase aTileProvider,
 			final Handler tileRequestCompleteHandler) {
-		this(context, tileSizePixels, resourceProxy, aTileProvider, tileRequestCompleteHandler,
-				null);
+		this(context, tileSizePixels, resourceProxy, aTileProvider,
+				tileRequestCompleteHandler, null);
 	}
 
 	// ===========================================================
@@ -227,31 +236,50 @@ MultiTouchObjectCanvas<Object> {
 		return this.mController;
 	}
 
-	public <T extends OverlayItem> void  addClusteredMarkers(Context ctx,List<T> aList,Drawable pMarker, Drawable pMarkerFocused,int pFocusedBackgroundColor,OnItemGestureListener<T> aOnItemTapListener, ResourceProxy pResourceProxy){
-		this.getOverlays().add(new ClusteredOverlay(ctx,aList, pMarker, pMarkerFocused, pFocusedBackgroundColor, aOnItemTapListener, pResourceProxy));
+	public <T extends OverlayItem> void adddsMarkers(Context ctx,
+			List<T> aList, Drawable pMarker, Drawable pMarkerFocused,
+			int pFocusedBackgroundColor,
+			OnItemGestureListener<T> aOnItemTapListener,
+			ResourceProxy pResourceProxy) {
+		this.getOverlays().add(
+				new ClusteredOverlay(ctx, aList, pMarker, pMarkerFocused,
+						pFocusedBackgroundColor, aOnItemTapListener,
+						pResourceProxy));
 	}
 
-	public <T extends OverlayItem> void addClusteredMarkers(Context ctx, List<T> aList,OnItemGestureListener<T> aOnItemTapListener, ResourceProxy pResourceProxy){
-		this.getOverlays().add(new ClusteredOverlay(ctx, aList, aOnItemTapListener,pResourceProxy));
+	public <T extends OverlayItem> void addClusteredMarkers(Context ctx,
+			List<T> aList, OnItemGestureListener<T> aOnItemTapListener,
+			ResourceProxy pResourceProxy) {
+		this.getOverlays().add(
+				new ClusteredOverlay(ctx, aList, aOnItemTapListener,
+						pResourceProxy));
 	}
 
-	public <T extends OverlayItem> void addClusteredMarkers(Context ctx,List<T> aList,OnItemGestureListener<T> aOnItemTapListener){
-		this.getOverlays().add(new ClusteredOverlay(ctx, aList, aOnItemTapListener));
+	public <T extends OverlayItem> void addClusteredMarkers(Context ctx,
+			List<T> aList, OnItemGestureListener<T> aOnItemTapListener) {
+		this.getOverlays().add(
+				new ClusteredOverlay(ctx, aList, aOnItemTapListener));
 	}
-
 
 	/**
-	 * This method create an Overlay which adds automatically a marker at the coordinates of the touch.
-	 * The marker has a default title and the coordinates as description.
+	 * This method create an Overlay which adds automatically a marker at the
+	 * coordinates of the touch. The marker has a default title and the
+	 * coordinates as description.
 	 */
 	public void addMarkerOnLongClick() {
-		markersAdded = new ItemizedOverlayWithBubble<ExtendedOverlayItem>(getContext(), new ArrayList<ExtendedOverlayItem>(), this);
+		markersAdded = new ItemizedOverlayWithBubble<ExtendedOverlayItem>(
+				getContext(), new ArrayList<ExtendedOverlayItem>(), this);
 		this.getOverlays().add(markersAdded);
-		this.getOverlays().add(new LongPressOverlay(getContext()){
+		this.getOverlays().add(new LongPressOverlay(getContext()) {
 			@Override
 			public void onLongPressGesture(MotionEvent event) {
-				IGeoPoint point = mapView.getProjection().fromPixels(event.getX(),event.getY());
-				mapView.markersAdded.addItem(new ExtendedOverlayItem("Item",point.getLatitudeE6()/1E6 + ","+ point.getLongitudeE6()/1E6,new GeoPoint(point.getLatitudeE6()/1E6,point.getLongitudeE6()/1E6)));
+				IGeoPoint point = mapView.getProjection().fromPixels(
+						event.getX(), event.getY());
+				mapView.markersAdded.addItem(new ExtendedOverlayItem("Item",
+						point.getLatitudeE6() / 1E6 + ","
+								+ point.getLongitudeE6() / 1E6, new GeoPoint(
+								point.getLatitudeE6() / 1E6, point
+										.getLongitudeE6() / 1E6)));
 				mapView.invalidate();
 			}
 		});
@@ -266,88 +294,104 @@ MultiTouchObjectCanvas<Object> {
 	}
 
 	/**
-	 * Adds a new Overlay to the mapView containing the markers with a default GestureListener attached 
+	 * Adds a new Overlay to the mapView containing the markers with a default
+	 * GestureListener attached
+	 * 
 	 * @param items
-	 * ArrayList of OverlayItem that will be added
+	 *            ArrayList of OverlayItem that will be added
 	 */
-	public <T extends OverlayItem> void addMarkers(ArrayList<T> items){
-		ItemizedOverlayWithFocus<T> currentLocationOverlay = new ItemizedOverlayWithFocus<T>(items,new ItemizedIconOverlay.OnItemGestureListener<T>() {
+	public <T extends OverlayItem> void addMarkers(ArrayList<T> items) {
+		ItemizedOverlayWithFocus<T> currentLocationOverlay = new ItemizedOverlayWithFocus<T>(
+				items, new ItemizedIconOverlay.OnItemGestureListener<T>() {
 
-			@Override
-			public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-				return true;
-			}
+					@Override
+					public boolean onItemSingleTapUp(final int index,
+							final OverlayItem item) {
+						return true;
+					}
 
-			@Override
-			public boolean onItemLongPress(int arg0, OverlayItem arg1) {
-				return false;
-			}
-		}, this.getResourceProxy());
+					@Override
+					public boolean onItemLongPress(int arg0, OverlayItem arg1) {
+						return false;
+					}
+				}, this.getResourceProxy());
 
 		this.getOverlays().add(currentLocationOverlay);
 	}
 
 	/**
-	 * Adds a new Overlay to the mapView containing the markers with an attached GestureListener
+	 * Adds a new Overlay to the mapView containing the markers with an attached
+	 * GestureListener
+	 * 
 	 * @param items
-	 * ArrayList of OverlayItem which will be added on the Overlay
+	 *            ArrayList of OverlayItem which will be added on the Overlay
 	 * @param onGesture
-	 * Gesture Listener that will be attached to each Marker
+	 *            Gesture Listener that will be attached to each Marker
 	 */
-	public <T extends OverlayItem> void addMarkers(ArrayList<T> items,OnItemGestureListener<T> onGesture){
-		ItemizedOverlayWithFocus<T> currentLocationOverlay = new ItemizedOverlayWithFocus<T>(items,onGesture, this.getResourceProxy());
+	public <T extends OverlayItem> void addMarkers(ArrayList<T> items,
+			OnItemGestureListener<T> onGesture) {
+		ItemizedOverlayWithFocus<T> currentLocationOverlay = new ItemizedOverlayWithFocus<T>(
+				items, onGesture, this.getResourceProxy());
 		this.getOverlays().add(currentLocationOverlay);
 	}
 
 	/**
-	 * Add a new Overlay to the map containing the markers on each GeoPoint passed.
-	 * (default Title and Description are added)
+	 * Add a new Overlay to the map containing the markers on each GeoPoint
+	 * passed. (default Title and Description are added)
+	 * 
 	 * @param points
-	 * ArrayList of Geopoints that have to be added to the mapView
+	 *            ArrayList of Geopoints that have to be added to the mapView
 	 */
-	public <T extends OverlayItem> void addMarkersFromPoints(ArrayList<GeoPoint> points){
+	public <T extends OverlayItem> void addMarkersFromPoints(
+			ArrayList<GeoPoint> points) {
 
 		ArrayList<T> items = new ArrayList<T>();
-		for(GeoPoint point : points)
-		{
-			items.add((T) new OverlayItem("Title","Description",point));
+		for (GeoPoint point : points) {
+			items.add((T) new OverlayItem("Title", "Description", point));
 		}
-		ItemizedOverlayWithFocus<T> currentLocationOverlay = new ItemizedOverlayWithFocus<T>(items,new ItemizedIconOverlay.OnItemGestureListener<T>() {
+		ItemizedOverlayWithFocus<T> currentLocationOverlay = new ItemizedOverlayWithFocus<T>(
+				items, new ItemizedIconOverlay.OnItemGestureListener<T>() {
 
-			@Override
-			public boolean onItemSingleTapUp(final int index, final OverlayItem item) {
-				return true;
-			}
+					@Override
+					public boolean onItemSingleTapUp(final int index,
+							final OverlayItem item) {
+						return true;
+					}
 
-			@Override
-			public boolean onItemLongPress(int arg0, OverlayItem arg1) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-		}, this.getResourceProxy());
+					@Override
+					public boolean onItemLongPress(int arg0, OverlayItem arg1) {
+						// TODO Auto-generated method stub
+						return false;
+					}
+				}, this.getResourceProxy());
 
 		this.getOverlays().add(currentLocationOverlay);
 	}
 
 	/**
-	 * Build a {@link PathOverlay} by calling {@link RoutingTask} and draws it on the mapView
+	 * Build a {@link PathOverlay} by calling {@link RoutingTask} and draws it
+	 * on the mapView
+	 * 
 	 * @param points
-	 * An ArrayList<GeoPoint> that represents the Points on which the path should pass
+	 *            An ArrayList<GeoPoint> that represents the Points on which the
+	 *            path should pass
 	 * @param mLocale
-	 * the language of the instructions
+	 *            the language of the instructions
 	 * @param mRoadType
-	 * the type of the road (e.g. PEDESTRIAN, FASTEST, SHORTEST)
+	 *            the type of the road (e.g. PEDESTRIAN, FASTEST, SHORTEST)
 	 * @param apiv1
-	 * true if you want to use mapquest's api v1, false for api v0
+	 *            true if you want to use mapquest's api v1, false for api v0
 	 */
-	public void drawPath(ArrayList<GeoPoint> points, Locale mLocale, String mRoadType,boolean apiv1)
-	{
-		RoutingTask.drawPath(points, this, getContext(), mLocale, mRoadType,apiv1);
+	public void drawPath(ArrayList<GeoPoint> points, Locale mLocale,
+			String mRoadType, boolean apiv1) {
+		RoutingTask.drawPath(points, this, getContext(), mLocale, mRoadType,
+				apiv1);
 	}
 
 	/**
-	 * You can add/remove/reorder your Overlays using the List of {@link Overlay}. The first (index
-	 * 0) Overlay gets drawn first, the one with the highest as the last one.
+	 * You can add/remove/reorder your Overlays using the List of
+	 * {@link Overlay}. The first (index 0) Overlay gets drawn first, the one
+	 * with the highest as the last one.
 	 */
 	public List<Overlay> getOverlays() {
 		return this.getOverlayManager();
@@ -380,22 +424,31 @@ MultiTouchObjectCanvas<Object> {
 	}
 
 	public BoundingBoxE6 getBoundingBox() {
-		return getBoundingBox(getWidth(), getHeight());
+
+		if (getWidth() == 0 && getHeight() == 0)
+			return this.boundingBox;
+		else
+			return getBoundingBox(getWidth(), getHeight());
+		// commentata per risolvere un problema con il getWidth and getHeight
+		// che ritonavano 0
+		// return getBoundingBox(getWidth(), getHeight());
 	}
 
-	public BoundingBoxE6 getBoundingBox(final int pViewWidth, final int pViewHeight) {
+	public BoundingBoxE6 getBoundingBox(final int pViewWidth,
+			final int pViewHeight) {
 
 		final int world_2 = TileSystem.MapSize(mZoomLevel) / 2;
 		final Rect screenRect = getScreenRect(null);
 		screenRect.offset(world_2, world_2);
 
-		final IGeoPoint neGeoPoint = TileSystem.PixelXYToLatLong(screenRect.right, screenRect.top,
-				mZoomLevel, null);
-		final IGeoPoint swGeoPoint = TileSystem.PixelXYToLatLong(screenRect.left,
-				screenRect.bottom, mZoomLevel, null);
+		final IGeoPoint neGeoPoint = TileSystem.PixelXYToLatLong(
+				screenRect.right, screenRect.top, mZoomLevel, null);
+		final IGeoPoint swGeoPoint = TileSystem.PixelXYToLatLong(
+				screenRect.left, screenRect.bottom, mZoomLevel, null);
 
-		return new BoundingBoxE6(neGeoPoint.getLatitudeE6(), neGeoPoint.getLongitudeE6(),
-				swGeoPoint.getLatitudeE6(), swGeoPoint.getLongitudeE6());
+		return new BoundingBoxE6(neGeoPoint.getLatitudeE6(),
+				neGeoPoint.getLongitudeE6(), swGeoPoint.getLatitudeE6(),
+				swGeoPoint.getLongitudeE6());
 	}
 
 	/**
@@ -404,30 +457,32 @@ MultiTouchObjectCanvas<Object> {
 	public Rect getScreenRect(final Rect reuse) {
 		final Rect out = getIntrinsicScreenRect(reuse);
 		if (this.getMapOrientation() != 0 && this.getMapOrientation() != 180) {
-			// Since the canvas is shifted by getWidth/2, we can just return our natural scrollX/Y
+			// Since the canvas is shifted by getWidth/2, we can just return our
+			// natural scrollX/Y
 			// value since that is the same as the shifted center.
 			int centerX = this.getScrollX();
 			int centerY = this.getScrollY();
-			GeometryMath.getBoundingBoxForRotatatedRectangle(out, centerX, centerY,
-					this.getMapOrientation(), out);
+			GeometryMath.getBoundingBoxForRotatatedRectangle(out, centerX,
+					centerY, this.getMapOrientation(), out);
 		}
 		return out;
 	}
 
 	public Rect getIntrinsicScreenRect(final Rect reuse) {
 		final Rect out = reuse == null ? new Rect() : reuse;
-		out.set(getScrollX() - getWidth() / 2, getScrollY() - getHeight() / 2, getScrollX()
-				+ getWidth() / 2, getScrollY() + getHeight() / 2);
+		out.set(getScrollX() - getWidth() / 2, getScrollY() - getHeight() / 2,
+				getScrollX() + getWidth() / 2, getScrollY() + getHeight() / 2);
 		return out;
 	}
 
 	/**
-	 * Get a projection for converting between screen-pixel coordinates and latitude/longitude
-	 * coordinates. You should not hold on to this object for more than one draw, since the
-	 * projection of the map could change.
-	 *
-	 * @return The Projection of the map in its current state. You should not hold on to this object
-	 *         for more than one draw, since the projection of the map could change.
+	 * Get a projection for converting between screen-pixel coordinates and
+	 * latitude/longitude coordinates. You should not hold on to this object for
+	 * more than one draw, since the projection of the map could change.
+	 * 
+	 * @return The Projection of the map in its current state. You should not
+	 *         hold on to this object for more than one draw, since the
+	 *         projection of the map could change.
 	 */
 	@Override
 	public Projection getProjection() {
@@ -442,15 +497,15 @@ MultiTouchObjectCanvas<Object> {
 	}
 
 	void setMapCenter(final int aLatitudeE6, final int aLongitudeE6) {
-		final Point coords = TileSystem.LatLongToPixelXY(aLatitudeE6 / 1E6, aLongitudeE6 / 1E6,
-				getZoomLevel(), null);
+		final Point coords = TileSystem.LatLongToPixelXY(aLatitudeE6 / 1E6,
+				aLongitudeE6 / 1E6, getZoomLevel(), null);
 		final int worldSize_2 = TileSystem.MapSize(this.getZoomLevel(false)) / 2;
 		if (getAnimation() == null || getAnimation().hasEnded()) {
-			logger.debug("StartScroll");
+			// logger.debug("StartScroll");
 			mIsFlinging = false;
-			mScroller.startScroll(getScrollX(), getScrollY(),
-					coords.x - worldSize_2 - getScrollX(), coords.y - worldSize_2 - getScrollY(),
-					500);
+			mScroller.startScroll(getScrollX(), getScrollY(), coords.x
+					- worldSize_2 - getScrollX(), coords.y - worldSize_2
+					- getScrollY(), 500);
 			postInvalidate();
 		}
 	}
@@ -471,7 +526,8 @@ MultiTouchObjectCanvas<Object> {
 		final int minZoomLevel = getMinZoomLevel();
 		final int maxZoomLevel = getMaxZoomLevel();
 
-		final int newZoomLevel = Math.max(minZoomLevel, Math.min(maxZoomLevel, aZoomLevel));
+		final int newZoomLevel = Math.max(minZoomLevel,
+				Math.min(maxZoomLevel, aZoomLevel));
 		final int curZoomLevel = this.mZoomLevel;
 
 		if (newZoomLevel != curZoomLevel) {
@@ -483,31 +539,37 @@ MultiTouchObjectCanvas<Object> {
 		this.checkZoomButtons();
 
 		if (newZoomLevel > curZoomLevel) {
-			// We are going from a lower-resolution plane to a higher-resolution plane, so we have
+			// We are going from a lower-resolution plane to a higher-resolution
+			// plane, so we have
 			// to do it the hard way.
 			final int worldSize_current_2 = TileSystem.MapSize(curZoomLevel) / 2;
 			final int worldSize_new_2 = TileSystem.MapSize(newZoomLevel) / 2;
-			final IGeoPoint centerGeoPoint = TileSystem.PixelXYToLatLong(getScrollX()
-					+ worldSize_current_2, getScrollY() + worldSize_current_2, curZoomLevel, null);
+			final IGeoPoint centerGeoPoint = TileSystem.PixelXYToLatLong(
+					getScrollX() + worldSize_current_2, getScrollY()
+							+ worldSize_current_2, curZoomLevel, null);
 			final Point centerPoint = TileSystem.LatLongToPixelXY(
-					centerGeoPoint.getLatitudeE6() / 1E6, centerGeoPoint.getLongitudeE6() / 1E6,
-					newZoomLevel, null);
-			scrollTo(centerPoint.x - worldSize_new_2, centerPoint.y - worldSize_new_2);
+					centerGeoPoint.getLatitudeE6() / 1E6,
+					centerGeoPoint.getLongitudeE6() / 1E6, newZoomLevel, null);
+			scrollTo(centerPoint.x - worldSize_new_2, centerPoint.y
+					- worldSize_new_2);
 		} else if (newZoomLevel < curZoomLevel) {
-			// We are going from a higher-resolution plane to a lower-resolution plane, so we can do
+			// We are going from a higher-resolution plane to a lower-resolution
+			// plane, so we can do
 			// it the easy way.
 			scrollTo(getScrollX() >> curZoomLevel - newZoomLevel,
-			getScrollY() >> curZoomLevel - newZoomLevel);
+					getScrollY() >> curZoomLevel - newZoomLevel);
 		}
 
 		// snap for all snappables
 		final Point snapPoint = new Point();
 		mProjection = new Projection();
-		if (this.getOverlayManager().onSnapToItem(getScrollX(), getScrollY(), snapPoint, this)) {
+		if (this.getOverlayManager().onSnapToItem(getScrollX(), getScrollY(),
+				snapPoint, this)) {
 			scrollTo(snapPoint.x, snapPoint.y);
 		}
 
-		mTileProvider.rescaleCache(newZoomLevel, curZoomLevel, getScreenRect(null));
+		mTileProvider.rescaleCache(newZoomLevel, curZoomLevel,
+				getScreenRect(null));
 
 		// do callback on listener
 		if (newZoomLevel != curZoomLevel && mListener != null) {
@@ -520,51 +582,51 @@ MultiTouchObjectCanvas<Object> {
 	}
 
 	/**
-	 * Zoom the map to enclose the specified bounding box, as closely as possible.
-	 * Must be called after display layout is complete, or screen dimensions are not known, and
-	 * will always zoom to center of zoom  level 0.
+	 * Zoom the map to enclose the specified bounding box, as closely as
+	 * possible. Must be called after display layout is complete, or screen
+	 * dimensions are not known, and will always zoom to center of zoom level 0.
 	 * Suggestion: Check getScreenRect(null).getHeight() > 0
 	 */
 	public void zoomToBoundingBox(final BoundingBoxE6 boundingBox) {
 		final BoundingBoxE6 currentBox = getBoundingBox();
 
 		// Calculated required zoom based on latitude span
-		final double maxZoomLatitudeSpan = mZoomLevel == getMaxZoomLevel() ?
-				currentBox.getLatitudeSpanE6() :
-					currentBox.getLatitudeSpanE6() / Math.pow(2, getMaxZoomLevel() - mZoomLevel);
+		final double maxZoomLatitudeSpan = mZoomLevel == getMaxZoomLevel() ? currentBox
+				.getLatitudeSpanE6() : currentBox.getLatitudeSpanE6()
+				/ Math.pow(2, getMaxZoomLevel() - mZoomLevel);
 
-				final double requiredLatitudeZoom =
-						getMaxZoomLevel() -
-						Math.ceil(Math.log(boundingBox.getLatitudeSpanE6() / maxZoomLatitudeSpan) / Math.log(2));
+		final double requiredLatitudeZoom = getMaxZoomLevel()
+				- Math.ceil(Math.log(boundingBox.getLatitudeSpanE6()
+						/ maxZoomLatitudeSpan)
+						/ Math.log(2));
 
+		// Calculated required zoom based on longitude span
+		final double maxZoomLongitudeSpan = mZoomLevel == getMaxZoomLevel() ? currentBox
+				.getLongitudeSpanE6() : currentBox.getLongitudeSpanE6()
+				/ Math.pow(2, getMaxZoomLevel() - mZoomLevel);
 
-				// Calculated required zoom based on longitude span
-				final double maxZoomLongitudeSpan = mZoomLevel == getMaxZoomLevel() ?
-						currentBox.getLongitudeSpanE6() :
-							currentBox.getLongitudeSpanE6() / Math.pow(2, getMaxZoomLevel() - mZoomLevel);
+		final double requiredLongitudeZoom = getMaxZoomLevel()
+				- Math.ceil(Math.log(boundingBox.getLongitudeSpanE6()
+						/ maxZoomLongitudeSpan)
+						/ Math.log(2));
 
-						final double requiredLongitudeZoom =
-								getMaxZoomLevel() -
-								Math.ceil(Math.log(boundingBox.getLongitudeSpanE6() / maxZoomLongitudeSpan) / Math.log(2));
+		// Zoom to boundingBox center, at calculated maximum allowed zoom level
+		getController()
+				.setZoom(
+						(int) (requiredLatitudeZoom < requiredLongitudeZoom ? requiredLatitudeZoom
+								: requiredLongitudeZoom));
 
-
-						// Zoom to boundingBox center, at calculated maximum allowed zoom level
-						getController().setZoom((int)(
-								requiredLatitudeZoom < requiredLongitudeZoom ?
-										requiredLatitudeZoom : requiredLongitudeZoom));
-
-						getController().setCenter(
-								new GeoPoint(
-										boundingBox.getCenter().getLatitudeE6()/1000000.0,
-										boundingBox.getCenter().getLongitudeE6()/1000000.0
-										));
+		getController().setCenter(
+				new GeoPoint(
+						boundingBox.getCenter().getLatitudeE6() / 1000000.0,
+						boundingBox.getCenter().getLongitudeE6() / 1000000.0));
 	}
 
 	/**
 	 * Get the current ZoomLevel for the map tiles.
-	 *
-	 * @return the current ZoomLevel between 0 (equator) and 18/19(closest), depending on the tile
-	 *         source chosen.
+	 * 
+	 * @return the current ZoomLevel between 0 (equator) and 18/19(closest),
+	 *         depending on the tile source chosen.
 	 */
 	@Override
 	public int getZoomLevel() {
@@ -573,10 +635,11 @@ MultiTouchObjectCanvas<Object> {
 
 	/**
 	 * Get the current ZoomLevel for the map tiles.
-	 *
+	 * 
 	 * @param aPending
-	 *            if true and we're animating then return the zoom level that we're animating
-	 *            towards, otherwise return the current zoom level
+	 *            if true and we're animating then return the zoom level that
+	 *            we're animating towards, otherwise return the current zoom
+	 *            level
 	 * @return the zoom level
 	 */
 	public int getZoomLevel(final boolean aPending) {
@@ -591,7 +654,8 @@ MultiTouchObjectCanvas<Object> {
 	 * Get the minimum allowed zoom level for the maps.
 	 */
 	public int getMinZoomLevel() {
-		return mMinimumZoomLevel == null ? mMapOverlay.getMinimumZoomLevel() : mMinimumZoomLevel;
+		return mMinimumZoomLevel == null ? mMapOverlay.getMinimumZoomLevel()
+				: mMinimumZoomLevel;
 	}
 
 	/**
@@ -599,30 +663,31 @@ MultiTouchObjectCanvas<Object> {
 	 */
 	@Override
 	public int getMaxZoomLevel() {
-		return mMaximumZoomLevel == null ? mMapOverlay.getMaximumZoomLevel() : mMaximumZoomLevel;
+		return mMaximumZoomLevel == null ? mMapOverlay.getMaximumZoomLevel()
+				: mMaximumZoomLevel;
 	}
 
 	/**
-	 * Set the minimum allowed zoom level, or pass null to use the minimum zoom level from the tile
-	 * provider.
+	 * Set the minimum allowed zoom level, or pass null to use the minimum zoom
+	 * level from the tile provider.
 	 */
 	public void setMinZoomLevel(Integer zoomLevel) {
 		mMinimumZoomLevel = zoomLevel;
 	}
 
 	/**
-	 * Set the maximum allowed zoom level, or pass null to use the maximum zoom level from the tile
-	 * provider.
+	 * Set the maximum allowed zoom level, or pass null to use the maximum zoom
+	 * level from the tile provider.
 	 */
 	public void setMaxZoomLevel(Integer zoomLevel) {
 		mMaximumZoomLevel = zoomLevel;
 	}
 
-
 	/**
 	 * change the zoom Level of the mapview to the BoundingBox
+	 * 
 	 * @param boundingBox
-	 * BoundingBox to set the zoom to
+	 *            BoundingBox to set the zoom to
 	 */
 	public void setBoundingBox(BoundingBoxE6 boundingBox) {
 		this.boundingBox = boundingBox;
@@ -631,9 +696,11 @@ MultiTouchObjectCanvas<Object> {
 	}
 
 	/**
-	 * change the zoom Level of the mapview to the maximum zoom level containing all the GeoPoints in the ArrayList passed
+	 * change the zoom Level of the mapview to the maximum zoom level containing
+	 * all the GeoPoints in the ArrayList passed
+	 * 
 	 * @param points
-	 * ArrayList containing the points that have to be on the screen
+	 *            ArrayList containing the points that have to be on the screen
 	 */
 	public void setBoundingBox(ArrayList<GeoPoint> points) {
 		this.boundingBox = BoundingBoxE6.fromGeoPoints(points);
@@ -689,7 +756,8 @@ MultiTouchObjectCanvas<Object> {
 	}
 
 	boolean zoomInFixing(final int xPixel, final int yPixel) {
-		setMapCenter(xPixel, yPixel); // TODO should fix on point, not center on it
+		setMapCenter(xPixel, yPixel); // TODO should fix on point, not center on
+										// it
 		return zoomIn();
 	}
 
@@ -719,13 +787,15 @@ MultiTouchObjectCanvas<Object> {
 	}
 
 	boolean zoomOutFixing(final int xPixel, final int yPixel) {
-		setMapCenter(xPixel, yPixel); // TODO should fix on point, not center on it
+		setMapCenter(xPixel, yPixel); // TODO should fix on point, not center on
+										// it
 		return zoomOut();
 	}
 
 	/**
-	 * Returns the current center-point position of the map, as a GeoPoint (latitude and longitude).
-	 *
+	 * Returns the current center-point position of the map, as a GeoPoint
+	 * (latitude and longitude).
+	 * 
 	 * @return A GeoPoint of the map's center-point.
 	 */
 	@Override
@@ -733,8 +803,26 @@ MultiTouchObjectCanvas<Object> {
 		final int world_2 = TileSystem.MapSize(mZoomLevel) / 2;
 		final Rect screenRect = getScreenRect(null);
 		screenRect.offset(world_2, world_2);
-		return TileSystem.PixelXYToLatLong(screenRect.centerX(), screenRect.centerY(), mZoomLevel,
-				null);
+		return TileSystem.PixelXYToLatLong(screenRect.centerX(),
+				screenRect.centerY(), mZoomLevel, null);
+	}
+
+	public IGeoPoint getMapFarLeft() {
+		final int world_2 = TileSystem.MapSize(mZoomLevel) / 2;
+		final Rect screenRect = getScreenRect(null);
+		screenRect.offset(world_2, world_2);
+		int lat = screenRect.centerX() + (screenRect.left / 2);
+		int lon = screenRect.centerY() + (screenRect.right / 2);
+		return TileSystem.PixelXYToLatLong(lat, lon, mZoomLevel, null);
+	}
+
+	public IGeoPoint getMapNearRight() {
+		final int world_2 = TileSystem.MapSize(mZoomLevel) / 2;
+		final Rect screenRect = getScreenRect(null);
+		screenRect.offset(world_2, world_2);
+		int lat = screenRect.centerX() - (screenRect.left / 2);
+		int lon = screenRect.centerY() - (screenRect.right / 2);
+		return TileSystem.PixelXYToLatLong(lat, lon, mZoomLevel, null);
 	}
 
 	public ResourceProxy getResourceProxy() {
@@ -759,26 +847,27 @@ MultiTouchObjectCanvas<Object> {
 
 	/**
 	 * Set whether to use the network connection if it's available.
-	 *
+	 * 
 	 * @param aMode
-	 *            if true use the network connection if it's available. if false don't use the
-	 *            network connection even if it's available.
+	 *            if true use the network connection if it's available. if false
+	 *            don't use the network connection even if it's available.
 	 */
 	public void setUseDataConnection(final boolean aMode) {
 		mMapOverlay.setUseDataConnection(aMode);
 	}
 
 	/**
-	 * Set the map to limit it's scrollable view to the specified BoundingBoxE6. Note this does not
-	 * limit zooming so it will be possible for the user to zoom to an area that is larger than the
-	 * limited area.
-	 *
+	 * Set the map to limit it's scrollable view to the specified BoundingBoxE6.
+	 * Note this does not limit zooming so it will be possible for the user to
+	 * zoom to an area that is larger than the limited area.
+	 * 
 	 * @param boundingBox
-	 *            A lat/long bounding box to limit scrolling to, or null to remove any scrolling
-	 *            limitations
+	 *            A lat/long bounding box to limit scrolling to, or null to
+	 *            remove any scrolling limitations
 	 */
 	public void setScrollableAreaLimit(BoundingBoxE6 boundingBox) {
-		final int worldSize_2 = TileSystem.MapSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
+		final int worldSize_2 = TileSystem
+				.MapSize(MapViewConstants.MAXIMUM_ZOOMLEVEL) / 2;
 
 		mScrollableAreaBoundingBox = boundingBox;
 
@@ -789,15 +878,20 @@ MultiTouchObjectCanvas<Object> {
 		}
 
 		// Get NW/upper-left
-		final Point upperLeft = TileSystem.LatLongToPixelXY(boundingBox.getLatNorthE6() / 1E6,
-				boundingBox.getLonWestE6() / 1E6, MapViewConstants.MAXIMUM_ZOOMLEVEL, null);
+		final Point upperLeft = TileSystem.LatLongToPixelXY(
+				boundingBox.getLatNorthE6() / 1E6,
+				boundingBox.getLonWestE6() / 1E6,
+				MapViewConstants.MAXIMUM_ZOOMLEVEL, null);
 		upperLeft.offset(-worldSize_2, -worldSize_2);
 
 		// Get SE/lower-right
-		final Point lowerRight = TileSystem.LatLongToPixelXY(boundingBox.getLatSouthE6() / 1E6,
-				boundingBox.getLonEastE6() / 1E6, MapViewConstants.MAXIMUM_ZOOMLEVEL, null);
+		final Point lowerRight = TileSystem.LatLongToPixelXY(
+				boundingBox.getLatSouthE6() / 1E6,
+				boundingBox.getLonEastE6() / 1E6,
+				MapViewConstants.MAXIMUM_ZOOMLEVEL, null);
 		lowerRight.offset(-worldSize_2, -worldSize_2);
-		mScrollableAreaLimit = new Rect(upperLeft.x, upperLeft.y, lowerRight.x, lowerRight.y);
+		mScrollableAreaLimit = new Rect(upperLeft.x, upperLeft.y, lowerRight.x,
+				lowerRight.y);
 	}
 
 	public BoundingBoxE6 getScrollableAreaLimit() {
@@ -813,14 +907,16 @@ MultiTouchObjectCanvas<Object> {
 		final int width_2 = this.getWidth() / 2;
 		final int height_2 = this.getHeight() / 2;
 
-		// Since the canvas is shifted by getWidth/2, we can just return our natural scrollX/Y value
+		// Since the canvas is shifted by getWidth/2, we can just return our
+		// natural scrollX/Y value
 		// since that is the same as the shifted center.
 		int centerX = this.getScrollX();
 		int centerY = this.getScrollY();
 
 		if (this.getMapOrientation() != 0)
-			GeometryMath.getBoundingBoxForRotatatedRectangle(mInvalidateRect, centerX, centerY,
-					this.getMapOrientation() + 180, mInvalidateRect);
+			GeometryMath.getBoundingBoxForRotatatedRectangle(mInvalidateRect,
+					centerX, centerY, this.getMapOrientation() + 180,
+					mInvalidateRect);
 		mInvalidateRect.offset(width_2, height_2);
 
 		super.invalidate(mInvalidateRect);
@@ -829,13 +925,15 @@ MultiTouchObjectCanvas<Object> {
 	/**
 	 * Returns a set of layout parameters with a width of
 	 * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}, a height of
-	 * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} at the {@link GeoPoint} (0, 0) align
-	 * with {@link MapView.LayoutParams#BOTTOM_CENTER}.
+	 * {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT} at the
+	 * {@link GeoPoint} (0, 0) align with
+	 * {@link MapView.LayoutParams#BOTTOM_CENTER}.
 	 */
 	@Override
 	protected ViewGroup.LayoutParams generateDefaultLayoutParams() {
 		return new MapView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-				ViewGroup.LayoutParams.WRAP_CONTENT, null, MapView.LayoutParams.BOTTOM_CENTER, 0, 0);
+				ViewGroup.LayoutParams.WRAP_CONTENT, null,
+				MapView.LayoutParams.BOTTOM_CENTER, 0, 0);
 	}
 
 	@Override
@@ -850,12 +948,14 @@ MultiTouchObjectCanvas<Object> {
 	}
 
 	@Override
-	protected ViewGroup.LayoutParams generateLayoutParams(final ViewGroup.LayoutParams p) {
+	protected ViewGroup.LayoutParams generateLayoutParams(
+			final ViewGroup.LayoutParams p) {
 		return new MapView.LayoutParams(p);
 	}
 
 	@Override
-	protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
+	protected void onMeasure(final int widthMeasureSpec,
+			final int heightMeasureSpec) {
 		final int count = getChildCount();
 
 		int maxHeight = 0;
@@ -869,7 +969,8 @@ MultiTouchObjectCanvas<Object> {
 			final View child = getChildAt(i);
 			if (child.getVisibility() != GONE) {
 
-				final MapView.LayoutParams lp = (MapView.LayoutParams) child.getLayoutParams();
+				final MapView.LayoutParams lp = (MapView.LayoutParams) child
+						.getLayoutParams();
 				final int childHeight = child.getMeasuredHeight();
 				final int childWidth = child.getMeasuredWidth();
 				getProjection().toMapPixels(lp.geoPoint, mPoint);
@@ -936,15 +1037,16 @@ MultiTouchObjectCanvas<Object> {
 	}
 
 	@Override
-	protected void onLayout(final boolean changed, final int l, final int t, final int r,
-			final int b) {
+	protected void onLayout(final boolean changed, final int l, final int t,
+			final int r, final int b) {
 		final int count = getChildCount();
 
 		for (int i = 0; i < count; i++) {
 			final View child = getChildAt(i);
 			if (child.getVisibility() != GONE) {
 
-				final MapView.LayoutParams lp = (MapView.LayoutParams) child.getLayoutParams();
+				final MapView.LayoutParams lp = (MapView.LayoutParams) child
+						.getLayoutParams();
 				final int childHeight = child.getMeasuredHeight();
 				final int childWidth = child.getMeasuredWidth();
 				getProjection().toMapPixels(lp.geoPoint, mPoint);
@@ -992,7 +1094,8 @@ MultiTouchObjectCanvas<Object> {
 				}
 				childLeft += lp.offsetX;
 				childTop += lp.offsetY;
-				child.layout(childLeft, childTop, childLeft + childWidth, childTop + childHeight);
+				child.layout(childLeft, childTop, childLeft + childWidth,
+						childTop + childHeight);
 			}
 		}
 		if (this.boundingBox != null) {
@@ -1007,14 +1110,16 @@ MultiTouchObjectCanvas<Object> {
 
 	@Override
 	public boolean onKeyDown(final int keyCode, final KeyEvent event) {
-		final boolean result = this.getOverlayManager().onKeyDown(keyCode, event, this);
+		final boolean result = this.getOverlayManager().onKeyDown(keyCode,
+				event, this);
 
 		return result || super.onKeyDown(keyCode, event);
 	}
 
 	@Override
 	public boolean onKeyUp(final int keyCode, final KeyEvent event) {
-		final boolean result = this.getOverlayManager().onKeyUp(keyCode, event, this);
+		final boolean result = this.getOverlayManager().onKeyUp(keyCode, event,
+				this);
 
 		return result || super.onKeyUp(keyCode, event);
 	}
@@ -1035,7 +1140,7 @@ MultiTouchObjectCanvas<Object> {
 	public boolean dispatchTouchEvent(final MotionEvent event) {
 
 		if (DEBUGMODE) {
-			logger.debug("dispatchTouchEvent(" + event + ")");
+			// logger.debug("dispatchTouchEvent(" + event + ")");
 		}
 
 		if (mZoomController.isVisible() && mZoomController.onTouch(this, event)) {
@@ -1048,7 +1153,7 @@ MultiTouchObjectCanvas<Object> {
 		try {
 			if (super.dispatchTouchEvent(event)) {
 				if (DEBUGMODE) {
-					logger.debug("super handled onTouchEvent");
+					// logger.debug("super handled onTouchEvent");
 				}
 				return true;
 			}
@@ -1057,16 +1162,17 @@ MultiTouchObjectCanvas<Object> {
 				return true;
 			}
 
-			if (mMultiTouchController != null && mMultiTouchController.onTouchEvent(event)) {
+			if (mMultiTouchController != null
+					&& mMultiTouchController.onTouchEvent(event)) {
 				if (DEBUGMODE) {
-					logger.debug("mMultiTouchController handled onTouchEvent");
+					// logger.debug("mMultiTouchController handled onTouchEvent");
 				}
 				return true;
 			}
 
 			if (mGestureDetector.onTouchEvent(rotatedEvent)) {
 				if (DEBUGMODE) {
-					logger.debug("mGestureDetector handled onTouchEvent");
+					// logger.debug("mGestureDetector handled onTouchEvent");
 				}
 				return true;
 			}
@@ -1076,7 +1182,7 @@ MultiTouchObjectCanvas<Object> {
 		}
 
 		if (DEBUGMODE) {
-			logger.debug("no-one handled onTouchEvent");
+			// logger.debug("no-one handled onTouchEvent");
 		}
 		return false;
 	}
@@ -1090,7 +1196,8 @@ MultiTouchObjectCanvas<Object> {
 		if (this.getMapOrientation() == 0)
 			return ev;
 
-		mRotateMatrix.setRotate(-getMapOrientation(), this.getWidth() / 2, this.getHeight() / 2);
+		mRotateMatrix.setRotate(-getMapOrientation(), this.getWidth() / 2,
+				this.getHeight() / 2);
 
 		MotionEvent rotatedEvent = MotionEvent.obtain(ev);
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
@@ -1099,11 +1206,13 @@ MultiTouchObjectCanvas<Object> {
 			mRotateMatrix.mapPoints(mRotatePoints);
 			rotatedEvent.setLocation(mRotatePoints[0], mRotatePoints[1]);
 		} else {
-			// This method is preferred since it will rotate historical touch events too
+			// This method is preferred since it will rotate historical touch
+			// events too
 			try {
 				if (sMotionEventTransformMethod == null) {
-					sMotionEventTransformMethod = MotionEvent.class.getDeclaredMethod("transform",
-							new Class[] { Matrix.class });
+					sMotionEventTransformMethod = MotionEvent.class
+							.getDeclaredMethod("transform",
+									new Class[] { Matrix.class });
 				}
 				sMotionEventTransformMethod.invoke(rotatedEvent, mRotateMatrix);
 			} catch (SecurityException e) {
@@ -1155,7 +1264,8 @@ MultiTouchObjectCanvas<Object> {
 		}
 
 		if (mScrollableAreaLimit != null) {
-			final int zoomDiff = MapViewConstants.MAXIMUM_ZOOMLEVEL - getZoomLevel(false);
+			final int zoomDiff = MapViewConstants.MAXIMUM_ZOOMLEVEL
+					- getZoomLevel(false);
 			final int minX = (mScrollableAreaLimit.left >> zoomDiff);
 			final int minY = (mScrollableAreaLimit.top >> zoomDiff);
 			final int maxX = (mScrollableAreaLimit.right >> zoomDiff);
@@ -1216,8 +1326,8 @@ MultiTouchObjectCanvas<Object> {
 				mMultiTouchScalePoint.y);
 
 		/* rotate Canvas */
-		c.rotate(mapOrientation, mProjection.getScreenRect().centerX(), mProjection.getScreenRect()
-				.centerY());
+		c.rotate(mapOrientation, mProjection.getScreenRect().centerX(),
+				mProjection.getScreenRect().centerY());
 
 		/* Draw background */
 		// c.drawColor(mBackgroundColor);
@@ -1232,13 +1342,13 @@ MultiTouchObjectCanvas<Object> {
 
 		if (DEBUGMODE) {
 			final long endMs = System.currentTimeMillis();
-			logger.debug("Rendering overall: " + (endMs - startMs) + "ms");
+			// logger.debug("Rendering overall: " + (endMs - startMs) + "ms");
 		}
 	}
 
 	/**
 	 * Returns true if the safe drawing canvas is being used.
-	 *
+	 * 
 	 * @see {@link ISafeCanvas}
 	 */
 	public boolean isUsingSafeCanvas() {
@@ -1247,7 +1357,7 @@ MultiTouchObjectCanvas<Object> {
 
 	/**
 	 * Sets whether the safe drawing canvas is being used.
-	 *
+	 * 
 	 * @see {@link ISafeCanvas}
 	 */
 	public void setUseSafeCanvas(boolean useSafeCanvas) {
@@ -1280,9 +1390,9 @@ MultiTouchObjectCanvas<Object> {
 	}
 
 	/**
-	 * Check mAnimationListener.isAnimating() to determine if view is animating. Useful for overlays
-	 * to avoid recalculating during an animation sequence.
-	 *
+	 * Check mAnimationListener.isAnimating() to determine if view is animating.
+	 * Useful for overlays to avoid recalculating during an animation sequence.
+	 * 
 	 * @return boolean indicating whether view is animating.
 	 */
 	public boolean isAnimating() {
@@ -1295,14 +1405,18 @@ MultiTouchObjectCanvas<Object> {
 
 	@Override
 	public Object getDraggableObjectAtPoint(final PointInfo pt) {
-		mMultiTouchScalePoint.x = pt.getX() + getScrollX() - (this.getWidth() / 2);
-		mMultiTouchScalePoint.y = pt.getY() + getScrollY() - (this.getHeight() / 2);
+		mMultiTouchScalePoint.x = pt.getX() + getScrollX()
+				- (this.getWidth() / 2);
+		mMultiTouchScalePoint.y = pt.getY() + getScrollY()
+				- (this.getHeight() / 2);
 		return this;
 	}
 
 	@Override
-	public void getPositionAndScale(final Object obj, final PositionAndScale objPosAndScaleOut) {
-		objPosAndScaleOut.set(0, 0, true, mMultiTouchScale, false, 0, 0, false, 0);
+	public void getPositionAndScale(final Object obj,
+			final PositionAndScale objPosAndScaleOut) {
+		objPosAndScaleOut.set(0, 0, true, mMultiTouchScale, false, 0, 0, false,
+				0);
 	}
 
 	@Override
@@ -1316,10 +1430,10 @@ MultiTouchObjectCanvas<Object> {
 			// adjust the center point in respect to the scaling point
 			if (scaleDiffInt != 0) {
 				Matrix m = new Matrix();
-				m.setScale(1 / mMultiTouchScale, 1 / mMultiTouchScale, mMultiTouchScalePoint.x,
-						mMultiTouchScalePoint.y);
-				m.postRotate(-mapOrientation, mProjection.getScreenRect().centerX(), mProjection
-						.getScreenRect().centerY());
+				m.setScale(1 / mMultiTouchScale, 1 / mMultiTouchScale,
+						mMultiTouchScalePoint.x, mMultiTouchScalePoint.y);
+				m.postRotate(-mapOrientation, mProjection.getScreenRect()
+						.centerX(), mProjection.getScreenRect().centerY());
 				float[] pts = new float[2];
 				pts[0] = getScrollX();
 				pts[1] = getScrollY();
@@ -1336,7 +1450,8 @@ MultiTouchObjectCanvas<Object> {
 	}
 
 	@Override
-	public boolean setPositionAndScale(final Object obj, final PositionAndScale aNewObjPosAndScale,
+	public boolean setPositionAndScale(final Object obj,
+			final PositionAndScale aNewObjPosAndScale,
 			final PointInfo aTouchPoint) {
 		float multiTouchScale = aNewObjPosAndScale.getScale();
 		// If we are at the first or last zoom level, prevent pinching/expanding
@@ -1373,22 +1488,28 @@ MultiTouchObjectCanvas<Object> {
 	}
 
 	public void setMultiTouchControls(final boolean on) {
-		mMultiTouchController = on ? new MultiTouchController<Object>(this, false) : null;
+		mMultiTouchController = on ? new MultiTouchController<Object>(this,
+				false) : null;
 	}
 
-	private ITileSource getTileSourceFromAttributes(final AttributeSet aAttributeSet) {
+	private ITileSource getTileSourceFromAttributes(
+			final AttributeSet aAttributeSet) {
 
 		ITileSource tileSource = TileSourceFactory.DEFAULT_TILE_SOURCE;
 
 		if (aAttributeSet != null) {
-			final String tileSourceAttr = aAttributeSet.getAttributeValue(null, "tilesource");
+			final String tileSourceAttr = aAttributeSet.getAttributeValue(null,
+					"tilesource");
 			if (tileSourceAttr != null) {
 				try {
-					final ITileSource r = TileSourceFactory.getTileSource(tileSourceAttr);
-					logger.info("Using tile source specified in layout attributes: " + r);
+					final ITileSource r = TileSourceFactory
+							.getTileSource(tileSourceAttr);
+					// logger.info("Using tile source specified in layout attributes: "
+					// + r);
 					tileSource = r;
 				} catch (final IllegalArgumentException e) {
-					logger.warn("Invalid tile source specified in layout attributes: " + tileSource);
+					// logger.warn("Invalid tile source specified in layout attributes: "
+					// + tileSource);
 				}
 			}
 		}
@@ -1396,14 +1517,15 @@ MultiTouchObjectCanvas<Object> {
 		if (aAttributeSet != null && tileSource instanceof IStyledTileSource) {
 			final String style = aAttributeSet.getAttributeValue(null, "style");
 			if (style == null) {
-				logger.info("Using default style: 1");
+				// logger.info("Using default style: 1");
 			} else {
-				logger.info("Using style specified in layout attributes: " + style);
+				// logger.info("Using style specified in layout attributes: " +
+				// style);
 				((IStyledTileSource<?>) tileSource).setStyle(style);
 			}
 		}
 
-		logger.info("Using tile source: " + tileSource);
+		// logger.info("Using tile source: " + tileSource);
 		return tileSource;
 	}
 
@@ -1412,23 +1534,24 @@ MultiTouchObjectCanvas<Object> {
 	// ===========================================================
 
 	/**
-	 * A Projection serves to translate between the coordinate system of x/y on-screen pixel
-	 * coordinates and that of latitude/longitude points on the surface of the earth. You obtain a
-	 * Projection from MapView.getProjection(). You should not hold on to this object for more than
-	 * one draw, since the projection of the map could change. <br />
+	 * A Projection serves to translate between the coordinate system of x/y
+	 * on-screen pixel coordinates and that of latitude/longitude points on the
+	 * surface of the earth. You obtain a Projection from
+	 * MapView.getProjection(). You should not hold on to this object for more
+	 * than one draw, since the projection of the map could change. <br />
 	 * <br />
-	 * <I>Screen coordinates</I> are in the coordinate system of the screen's Canvas. The origin is
-	 * in the center of the plane. <I>Screen coordinates</I> are appropriate for using to draw to
-	 * the screen.<br />
+	 * <I>Screen coordinates</I> are in the coordinate system of the screen's
+	 * Canvas. The origin is in the center of the plane. <I>Screen
+	 * coordinates</I> are appropriate for using to draw to the screen.<br />
 	 * <br />
-	 * <I>Map coordinates</I> are in the coordinate system of the standard Mercator projection. The
-	 * origin is in the upper-left corner of the plane. <I>Map coordinates</I> are appropriate for
-	 * use in the TileSystem class.<br />
+	 * <I>Map coordinates</I> are in the coordinate system of the standard
+	 * Mercator projection. The origin is in the upper-left corner of the plane.
+	 * <I>Map coordinates</I> are appropriate for use in the TileSystem class.<br />
 	 * <br />
-	 * <I>Intermediate coordinates</I> are used to cache the computationally heavy part of the
-	 * projection. They aren't suitable for use until translated into <I>screen coordinates</I> or
-	 * <I>map coordinates</I>.
-	 *
+	 * <I>Intermediate coordinates</I> are used to cache the computationally
+	 * heavy part of the projection. They aren't suitable for use until
+	 * translated into <I>screen coordinates</I> or <I>map coordinates</I>.
+	 * 
 	 * @author Nicolas Gramlich
 	 * @author Manuel Stahl
 	 */
@@ -1448,12 +1571,14 @@ MultiTouchObjectCanvas<Object> {
 		private Projection() {
 
 			/*
-			 * Do some calculations and drag attributes to local variables to save some performance.
+			 * Do some calculations and drag attributes to local variables to
+			 * save some performance.
 			 */
 			mZoomLevelProjection = MapView.this.mZoomLevel;
 			mBoundingBoxProjection = MapView.this.getBoundingBox();
 			mScreenRectProjection = MapView.this.getScreenRect(null);
-			mIntrinsicScreenRectProjection = MapView.this.getIntrinsicScreenRect(null);
+			mIntrinsicScreenRectProjection = MapView.this
+					.getIntrinsicScreenRect(null);
 		}
 
 		public int getZoomLevel() {
@@ -1488,7 +1613,8 @@ MultiTouchObjectCanvas<Object> {
 		@Deprecated
 		public Point getCenterMapTileCoords() {
 			final Rect rect = getScreenRect();
-			return TileSystem.PixelXYToTileXY(rect.centerX(), rect.centerY(), null);
+			return TileSystem.PixelXYToTileXY(rect.centerX(), rect.centerY(),
+					null);
 		}
 
 		/**
@@ -1499,20 +1625,22 @@ MultiTouchObjectCanvas<Object> {
 		@Deprecated
 		public Point getUpperLeftCornerOfCenterMapTile() {
 			final Point centerMapTileCoords = getCenterMapTileCoords();
-			return TileSystem.TileXYToPixelXY(centerMapTileCoords.x, centerMapTileCoords.y, null);
+			return TileSystem.TileXYToPixelXY(centerMapTileCoords.x,
+					centerMapTileCoords.y, null);
 		}
 
 		/**
 		 * Converts <I>screen coordinates</I> to the underlying GeoPoint.
-		 *
+		 * 
 		 * @param x
 		 * @param y
 		 * @return GeoPoint under x/y.
 		 */
 		public IGeoPoint fromPixels(final float x, final float y) {
 			final Rect screenRect = getIntrinsicScreenRect();
-			return TileSystem.PixelXYToLatLong(screenRect.left + (int) x + worldSize_2,
-					screenRect.top + (int) y + worldSize_2, mZoomLevelProjection, null);
+			return TileSystem.PixelXYToLatLong(screenRect.left + (int) x
+					+ worldSize_2, screenRect.top + (int) y + worldSize_2,
+					mZoomLevelProjection, null);
 		}
 
 		public Point fromMapPixels(final int x, final int y, final Point reuse) {
@@ -1524,74 +1652,79 @@ MultiTouchObjectCanvas<Object> {
 
 		/**
 		 * Converts a GeoPoint to its <I>screen coordinates</I>.
-		 *
+		 * 
 		 * @param in
 		 *            the GeoPoint you want the <I>screen coordinates</I> of
 		 * @param reuse
-		 *            just pass null if you do not have a Point to be 'recycled'.
-		 * @return the Point containing the <I>screen coordinates</I> of the GeoPoint passed.
+		 *            just pass null if you do not have a Point to be
+		 *            'recycled'.
+		 * @return the Point containing the <I>screen coordinates</I> of the
+		 *         GeoPoint passed.
 		 */
 		public Point toMapPixels(final IGeoPoint in, final Point reuse) {
 			final Point out = reuse != null ? reuse : new Point();
-			TileSystem.LatLongToPixelXY(
-					in.getLatitudeE6() / 1E6,
-					in.getLongitudeE6() / 1E6,
-					getZoomLevel(), out);
+			TileSystem.LatLongToPixelXY(in.getLatitudeE6() / 1E6,
+					in.getLongitudeE6() / 1E6, getZoomLevel(), out);
 			out.offset(offsetX, offsetY);
-			if (Math.abs(out.x - getScrollX()) >
-			Math.abs(out.x - TileSystem.MapSize(getZoomLevel()) - getScrollX())) {
+			if (Math.abs(out.x - getScrollX()) > Math.abs(out.x
+					- TileSystem.MapSize(getZoomLevel()) - getScrollX())) {
 				out.x -= TileSystem.MapSize(getZoomLevel());
 			}
-			if (Math.abs(out.y - getScrollY()) >
-			Math.abs(out.y - TileSystem.MapSize(getZoomLevel()) - getScrollY())) {
+			if (Math.abs(out.y - getScrollY()) > Math.abs(out.y
+					- TileSystem.MapSize(getZoomLevel()) - getScrollY())) {
 				out.y -= TileSystem.MapSize(getZoomLevel());
 			}
 			return out;
 		}
 
 		/**
-		 * Performs only the first computationally heavy part of the projection. Call
-		 * toMapPixelsTranslated to get the final position.
-		 *
+		 * Performs only the first computationally heavy part of the projection.
+		 * Call toMapPixelsTranslated to get the final position.
+		 * 
 		 * @param latituteE6
 		 *            the latitute of the point
 		 * @param longitudeE6
 		 *            the longitude of the point
 		 * @param reuse
-		 *            just pass null if you do not have a Point to be 'recycled'.
-		 * @return intermediate value to be stored and passed to toMapPixelsTranslated.
+		 *            just pass null if you do not have a Point to be
+		 *            'recycled'.
+		 * @return intermediate value to be stored and passed to
+		 *         toMapPixelsTranslated.
 		 */
-		public Point toMapPixelsProjected(final int latituteE6, final int longitudeE6,
-				final Point reuse) {
+		public Point toMapPixelsProjected(final int latituteE6,
+				final int longitudeE6, final Point reuse) {
 			final Point out = reuse != null ? reuse : new Point();
 
-			TileSystem
-			.LatLongToPixelXY(latituteE6 / 1E6, longitudeE6 / 1E6, MAXIMUM_ZOOMLEVEL, out);
+			TileSystem.LatLongToPixelXY(latituteE6 / 1E6, longitudeE6 / 1E6,
+					MAXIMUM_ZOOMLEVEL, out);
 			return out;
 		}
 
 		/**
-		 * Performs the second computationally light part of the projection. Returns results in
-		 * <I>screen coordinates</I>.
-		 *
+		 * Performs the second computationally light part of the projection.
+		 * Returns results in <I>screen coordinates</I>.
+		 * 
 		 * @param in
 		 *            the Point calculated by the toMapPixelsProjected
 		 * @param reuse
-		 *            just pass null if you do not have a Point to be 'recycled'.
-		 * @return the Point containing the <I>Screen coordinates</I> of the initial GeoPoint passed
-		 *         to the toMapPixelsProjected.
+		 *            just pass null if you do not have a Point to be
+		 *            'recycled'.
+		 * @return the Point containing the <I>Screen coordinates</I> of the
+		 *         initial GeoPoint passed to the toMapPixelsProjected.
 		 */
 		public Point toMapPixelsTranslated(final Point in, final Point reuse) {
 			final Point out = reuse != null ? reuse : new Point();
 
 			final int zoomDifference = MAXIMUM_ZOOMLEVEL - getZoomLevel();
-			out.set((in.x >> zoomDifference) + offsetX, (in.y >> zoomDifference) + offsetY);
+			out.set((in.x >> zoomDifference) + offsetX,
+					(in.y >> zoomDifference) + offsetY);
 			return out;
 		}
 
 		/**
-		 * Translates a rectangle from <I>screen coordinates</I> to <I>intermediate coordinates</I>.
-		 *
+		 * Translates a rectangle from <I>screen coordinates</I> to
+		 * <I>intermediate coordinates</I>.
+		 * 
 		 * @param in
 		 *            the rectangle in <I>screen coordinates</I>
 		 * @return a rectangle in </I>intermediate coordindates</I>.
@@ -1606,7 +1739,8 @@ MultiTouchObjectCanvas<Object> {
 			final int y0 = in.bottom - offsetY << zoomDifference;
 			final int y1 = in.top - offsetY << zoomDifference;
 
-			result.set(Math.min(x0, x1), Math.min(y0, y1), Math.max(x0, x1), Math.max(y0, y1));
+			result.set(Math.min(x0, x1), Math.min(y0, y1), Math.max(x0, x1),
+					Math.max(y0, y1));
 			return result;
 		}
 
@@ -1622,7 +1756,8 @@ MultiTouchObjectCanvas<Object> {
 		 * @deprecated Use TileSystem.TileXYToPixelXY
 		 */
 		@Deprecated
-		public Point toPixels(final int tileX, final int tileY, final Point reuse) {
+		public Point toPixels(final int tileX, final int tileY,
+				final Point reuse) {
 			return TileSystem.TileXYToPixelXY(tileX, tileY, reuse);
 		}
 
@@ -1632,15 +1767,13 @@ MultiTouchObjectCanvas<Object> {
 
 			final Point reuse = new Point();
 
-			toMapPixels(
-					new GeoPoint(pBoundingBoxE6.getLatNorthE6(), pBoundingBoxE6.getLonWestE6()),
-					reuse);
+			toMapPixels(new GeoPoint(pBoundingBoxE6.getLatNorthE6(),
+					pBoundingBoxE6.getLonWestE6()), reuse);
 			rect.left = reuse.x;
 			rect.top = reuse.y;
 
-			toMapPixels(
-					new GeoPoint(pBoundingBoxE6.getLatSouthE6(), pBoundingBoxE6.getLonEastE6()),
-					reuse);
+			toMapPixels(new GeoPoint(pBoundingBoxE6.getLatSouthE6(),
+					pBoundingBoxE6.getLonEastE6()), reuse);
 			rect.right = reuse.x;
 			rect.bottom = reuse.y;
 
@@ -1649,7 +1782,9 @@ MultiTouchObjectCanvas<Object> {
 
 		@Override
 		public float metersToEquatorPixels(final float meters) {
-			return meters / (float) TileSystem.GroundResolution(0, mZoomLevelProjection);
+			return meters
+					/ (float) TileSystem.GroundResolution(0,
+							mZoomLevelProjection);
 		}
 
 		@Override
@@ -1683,34 +1818,37 @@ MultiTouchObjectCanvas<Object> {
 		}
 
 		@Override
-		public boolean onFling(final MotionEvent e1, final MotionEvent e2, final float velocityX,
-				final float velocityY) {
-			if (MapView.this.getOverlayManager()
-					.onFling(e1, e2, velocityX, velocityY, MapView.this)) {
+		public boolean onFling(final MotionEvent e1, final MotionEvent e2,
+				final float velocityX, final float velocityY) {
+			if (MapView.this.getOverlayManager().onFling(e1, e2, velocityX,
+					velocityY, MapView.this)) {
 				return true;
 			}
 
-			final int worldSize = TileSystem.MapSize(MapView.this.getZoomLevel(false));
+			final int worldSize = TileSystem.MapSize(MapView.this
+					.getZoomLevel(false));
 			mIsFlinging = true;
-			mScroller.fling(getScrollX(), getScrollY(), (int) -velocityX, (int) -velocityY,
-					-worldSize, worldSize, -worldSize, worldSize);
+			mScroller.fling(getScrollX(), getScrollY(), (int) -velocityX,
+					(int) -velocityY, -worldSize, worldSize, -worldSize,
+					worldSize);
 			return true;
 		}
 
 		@Override
 		public void onLongPress(final MotionEvent e) {
-			if (mMultiTouchController != null && mMultiTouchController.isPinching()) {
+			if (mMultiTouchController != null
+					&& mMultiTouchController.isPinching()) {
 				return;
 			}
 			MapView.this.getOverlayManager().onLongPress(e, MapView.this);
 		}
 
 		@Override
-		public boolean onScroll(final MotionEvent e1, final MotionEvent e2, final float distanceX,
-				final float distanceY) {
-			if(scrollable){
-				if (MapView.this.getOverlayManager().onScroll(e1, e2, distanceX, distanceY,
-						MapView.this)) {
+		public boolean onScroll(final MotionEvent e1, final MotionEvent e2,
+				final float distanceX, final float distanceY) {
+			if (scrollable) {
+				if (MapView.this.getOverlayManager().onScroll(e1, e2,
+						distanceX, distanceY, MapView.this)) {
 					return true;
 				}
 
@@ -1736,20 +1874,23 @@ MultiTouchObjectCanvas<Object> {
 
 	}
 
-	private class MapViewDoubleClickListener implements GestureDetector.OnDoubleTapListener {
+	private class MapViewDoubleClickListener implements
+			GestureDetector.OnDoubleTapListener {
 		@Override
 		public boolean onDoubleTap(final MotionEvent e) {
 			if (MapView.this.getOverlayManager().onDoubleTap(e, MapView.this)) {
 				return true;
 			}
 
-			final IGeoPoint center = getProjection().fromPixels(e.getX(), e.getY());
+			final IGeoPoint center = getProjection().fromPixels(e.getX(),
+					e.getY());
 			return zoomInFixing(center);
 		}
 
 		@Override
 		public boolean onDoubleTapEvent(final MotionEvent e) {
-			if (MapView.this.getOverlayManager().onDoubleTapEvent(e, MapView.this)) {
+			if (MapView.this.getOverlayManager().onDoubleTapEvent(e,
+					MapView.this)) {
 				return true;
 			}
 
@@ -1758,7 +1899,8 @@ MultiTouchObjectCanvas<Object> {
 
 		@Override
 		public boolean onSingleTapConfirmed(final MotionEvent e) {
-			if (MapView.this.getOverlayManager().onSingleTapConfirmed(e, MapView.this)) {
+			if (MapView.this.getOverlayManager().onSingleTapConfirmed(e,
+					MapView.this)) {
 				return true;
 			}
 
@@ -1791,48 +1933,48 @@ MultiTouchObjectCanvas<Object> {
 	public static class LayoutParams extends ViewGroup.LayoutParams {
 
 		/**
-		 * Special value for the alignment requested by a View. TOP_LEFT means that the location
-		 * will at the top left the View.
+		 * Special value for the alignment requested by a View. TOP_LEFT means
+		 * that the location will at the top left the View.
 		 */
 		public static final int TOP_LEFT = 1;
 		/**
-		 * Special value for the alignment requested by a View. TOP_RIGHT means that the location
-		 * will be centered at the top of the View.
+		 * Special value for the alignment requested by a View. TOP_RIGHT means
+		 * that the location will be centered at the top of the View.
 		 */
 		public static final int TOP_CENTER = 2;
 		/**
-		 * Special value for the alignment requested by a View. TOP_RIGHT means that the location
-		 * will at the top right the View.
+		 * Special value for the alignment requested by a View. TOP_RIGHT means
+		 * that the location will at the top right the View.
 		 */
 		public static final int TOP_RIGHT = 3;
 		/**
-		 * Special value for the alignment requested by a View. CENTER_LEFT means that the location
-		 * will at the center left the View.
+		 * Special value for the alignment requested by a View. CENTER_LEFT
+		 * means that the location will at the center left the View.
 		 */
 		public static final int CENTER_LEFT = 4;
 		/**
-		 * Special value for the alignment requested by a View. CENTER means that the location will
-		 * be centered at the center of the View.
+		 * Special value for the alignment requested by a View. CENTER means
+		 * that the location will be centered at the center of the View.
 		 */
 		public static final int CENTER = 5;
 		/**
-		 * Special value for the alignment requested by a View. CENTER_RIGHT means that the location
-		 * will at the center right the View.
+		 * Special value for the alignment requested by a View. CENTER_RIGHT
+		 * means that the location will at the center right the View.
 		 */
 		public static final int CENTER_RIGHT = 6;
 		/**
-		 * Special value for the alignment requested by a View. BOTTOM_LEFT means that the location
-		 * will be at the bottom left of the View.
+		 * Special value for the alignment requested by a View. BOTTOM_LEFT
+		 * means that the location will be at the bottom left of the View.
 		 */
 		public static final int BOTTOM_LEFT = 7;
 		/**
-		 * Special value for the alignment requested by a View. BOTTOM_CENTER means that the
-		 * location will be centered at the bottom of the view.
+		 * Special value for the alignment requested by a View. BOTTOM_CENTER
+		 * means that the location will be centered at the bottom of the view.
 		 */
 		public static final int BOTTOM_CENTER = 8;
 		/**
-		 * Special value for the alignment requested by a View. BOTTOM_RIGHT means that the location
-		 * will be at the bottom right of the View.
+		 * Special value for the alignment requested by a View. BOTTOM_RIGHT
+		 * means that the location will be at the bottom right of the View.
 		 */
 		public static final int BOTTOM_RIGHT = 9;
 		/**
@@ -1849,29 +1991,32 @@ MultiTouchObjectCanvas<Object> {
 		public int offsetY;
 
 		/**
-		 * Creates a new set of layout parameters with the specified width, height and location.
-		 *
+		 * Creates a new set of layout parameters with the specified width,
+		 * height and location.
+		 * 
 		 * @param width
-		 *            the width, either {@link #FILL_PARENT}, {@link #WRAP_CONTENT} or a fixed size
-		 *            in pixels
+		 *            the width, either {@link #FILL_PARENT},
+		 *            {@link #WRAP_CONTENT} or a fixed size in pixels
 		 * @param height
-		 *            the height, either {@link #FILL_PARENT}, {@link #WRAP_CONTENT} or a fixed size
-		 *            in pixels
+		 *            the height, either {@link #FILL_PARENT},
+		 *            {@link #WRAP_CONTENT} or a fixed size in pixels
 		 * @param geoPoint
 		 *            the location of the child within the map view
 		 * @param alignment
-		 *            the alignment of the view compared to the location {@link #BOTTOM_CENTER},
-		 *            {@link #BOTTOM_LEFT}, {@link #BOTTOM_RIGHT} {@link #TOP_CENTER},
+		 *            the alignment of the view compared to the location
+		 *            {@link #BOTTOM_CENTER}, {@link #BOTTOM_LEFT},
+		 *            {@link #BOTTOM_RIGHT} {@link #TOP_CENTER},
 		 *            {@link #TOP_LEFT}, {@link #TOP_RIGHT}
 		 * @param offsetX
-		 *            the additional X offset from the alignment location to draw the child within
-		 *            the map view
+		 *            the additional X offset from the alignment location to
+		 *            draw the child within the map view
 		 * @param offsetY
-		 *            the additional Y offset from the alignment location to draw the child within
-		 *            the map view
+		 *            the additional Y offset from the alignment location to
+		 *            draw the child within the map view
 		 */
-		public LayoutParams(final int width, final int height, final IGeoPoint geoPoint,
-				final int alignment, final int offsetX, final int offsetY) {
+		public LayoutParams(final int width, final int height,
+				final IGeoPoint geoPoint, final int alignment,
+				final int offsetX, final int offsetY) {
 			super(width, height);
 			if (geoPoint != null) {
 				this.geoPoint = geoPoint;
@@ -1884,14 +2029,15 @@ MultiTouchObjectCanvas<Object> {
 		}
 
 		/**
-		 * Since we cannot use XML files in this project this constructor is useless. Creates a new
-		 * set of layout parameters. The values are extracted from the supplied attributes set and
-		 * context.
-		 *
+		 * Since we cannot use XML files in this project this constructor is
+		 * useless. Creates a new set of layout parameters. The values are
+		 * extracted from the supplied attributes set and context.
+		 * 
 		 * @param c
 		 *            the application environment
 		 * @param attrs
-		 *            the set of attributes fom which to extract the layout parameters values
+		 *            the set of attributes fom which to extract the layout
+		 *            parameters values
 		 */
 		public LayoutParams(final Context c, final AttributeSet attrs) {
 			super(c, attrs);

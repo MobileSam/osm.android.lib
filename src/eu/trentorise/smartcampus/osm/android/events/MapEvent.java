@@ -7,4 +7,5 @@ package eu.trentorise.smartcampus.osm.android.events;
  */
 public interface MapEvent {
 
+	
 }

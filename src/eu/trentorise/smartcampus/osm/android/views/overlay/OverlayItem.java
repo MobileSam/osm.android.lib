@@ -1,7 +1,8 @@
 package eu.trentorise.smartcampus.osm.android.views.overlay;
 
-import eu.trentorise.smartcampus.osm.android.util.GeoPoint;
+import java.io.Serializable;
 
+import eu.trentorise.smartcampus.osm.android.util.GeoPoint;
 import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 
@@ -13,7 +14,7 @@ import android.graphics.drawable.Drawable;
  * @author Fred Eisele
  * 
  */
-public class OverlayItem {
+public class OverlayItem  implements Serializable{
 
 	// ===========================================================
 	// Constants

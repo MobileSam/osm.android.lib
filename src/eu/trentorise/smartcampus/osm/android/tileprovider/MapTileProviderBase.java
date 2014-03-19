@@ -2,6 +2,7 @@ package eu.trentorise.smartcampus.osm.android.tileprovider;
 import java.util.HashMap;
 
 
+
 import eu.trentorise.smartcampus.osm.android.tileprovider.constants.OSMapTileProviderConstants;
 import eu.trentorise.smartcampus.osm.android.tileprovider.modules.MapTileModuleProviderBase;
 import eu.trentorise.smartcampus.osm.android.tileprovider.tilesource.ITileSource;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -42,6 +44,7 @@ public abstract class MapTileProviderBase implements IMapTileProviderCallback,
 	protected boolean mUseDataConnection = true;
 
 	private ITileSource mTileSource;
+	
 
 	public abstract Drawable getMapTile(MapTile pTile);
 
@@ -312,8 +315,8 @@ public abstract class MapTileProviderBase implements IMapTileProviderCallback,
 		
 		@Override
 		public void handleTile(final int pTileSizePx, final MapTile pTile, final int pX, final int pY) {
-			// get the correct fraction of the tile from cache and scale up
 
+			
 			final MapTile oldTile = new MapTile(mOldZoomLevel, pTile.getX() >> mDiff, pTile.getY() >> mDiff);
 			final Drawable oldDrawable = mTileCache.getMapTile(oldTile);
 

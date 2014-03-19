@@ -300,13 +300,13 @@ public class TilesOverlay extends SafeDrawOverlay implements IOverlayMenuProvide
 			clearLoadingTile();
 		}
 	}
-
+	private static Bitmap bitmap;
 	private Drawable getLoadingTile() {
 		if (mLoadingTile == null && mLoadingBackgroundColor != Color.TRANSPARENT) {
 			try {
 				final int tileSize = mTileProvider.getTileSource() != null ? mTileProvider
 						.getTileSource().getTileSizePixels() : 256;
-				final Bitmap bitmap = Bitmap.createBitmap(tileSize, tileSize,
+				bitmap = Bitmap.createBitmap(tileSize, tileSize,
 						Bitmap.Config.RGB_565);
 				final Canvas canvas = new Canvas(bitmap);
 				final Paint paint = new Paint();
@@ -319,6 +319,8 @@ public class TilesOverlay extends SafeDrawOverlay implements IOverlayMenuProvide
 					canvas.drawLine(a, 0, a, tileSize, paint);
 				}
 				mLoadingTile = new BitmapDrawable(bitmap);
+				bitmap = null;
+				
 			} catch (final OutOfMemoryError e) {
 				logger.error("OutOfMemoryError getting loading tile");
 				System.gc();
@@ -331,11 +333,11 @@ public class TilesOverlay extends SafeDrawOverlay implements IOverlayMenuProvide
 		final BitmapDrawable bitmapDrawable = mLoadingTile;
 		mLoadingTile = null;
 		// Only recycle if we are running on a project less than 2.3.3 Gingerbread.
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
+		//if (Build.VERSION.SDK_INT < Build.VERSION_CODES.GINGERBREAD) {
 			if (bitmapDrawable != null) {
 				bitmapDrawable.getBitmap().recycle();
 			}
-		}
+		//}
 	}
 
 	/**

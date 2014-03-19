@@ -34,6 +34,9 @@ public abstract class BitmapTileSourceBase implements ITileSource,
 	private final int mTileSizePixels;
 
 	private final string mResourceId;
+	
+	//AGGIUNTO PER EVITARE ERRORE DI LOW MEMORY
+	protected final BitmapFactory.Options options = new BitmapFactory.Options();
 
 	public BitmapTileSourceBase(final String aName, final string aResourceId,
 			final int aZoomMinLevel, final int aZoomMaxLevel, final int aTileSizePixels,
@@ -85,12 +88,20 @@ public abstract class BitmapTileSourceBase implements ITileSource,
 		return proxy.getString(mResourceId);
 	}
 
+	private static Bitmap bitmap;
+	
 	@Override
 	public Drawable getDrawable(final String aFilePath) {
 		try {
 			// default implementation will load the file as a bitmap and create
 			// a BitmapDrawable from it
-			final Bitmap bitmap = BitmapFactory.decodeFile(aFilePath);
+			
+			//AGGIUNTO PER EVITARE ERRORE DI LOW MEMORY
+			options.inPurgeable =true;
+
+			//AGGIUNTO PER EVITARE ERRORE DI LOW MEMORY ,options
+			bitmap = BitmapFactory.decodeFile(aFilePath, options);
+			//final Bitmap bitmap = BitmapFactory.decodeFile(aFilePath);
 			if (bitmap != null) {
 				return new ExpirableBitmapDrawable(bitmap);
 			} else {
@@ -103,6 +114,7 @@ public abstract class BitmapTileSourceBase implements ITileSource,
 			}
 		} catch (final OutOfMemoryError e) {
 			logger.error("OutOfMemoryError loading bitmap: " + aFilePath);
+			bitmap=null;
 			System.gc();
 		}
 		return null;
